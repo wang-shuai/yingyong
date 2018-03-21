@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MESSAGE>
+  <DATASET name="WA_COMMON_010000" rmk="数据交互通用信息">
+    <DATA>
+      <ITEM key="CLUE_SRC_SYS" val="110100" eng="FROM" chn="发起节点的标识" rmk="北京市海淀区"/>
+      <ITEM key="CLUE_DST_SYS" val="110100" eng="TO" chn="目的节点的标识" rmk="北京市局"/>
+      <ITEM key="BUSINESS_SERVER_TYPE" val="03" eng="BUSINESS_SERVER_TYPE" chn="业务服务类型" rmk="主动上报类"/>
+    </DATA>
+  </DATASET>
+  <DATASET name="WA_COMMON_010017" ver="1.0" rmk="数据文件索引信息">
+    <DATA>
+      <DATASET WA_COMMON_010013="BCP文件描述信息">
+        <DATA>
+          <ITEM key="COLUMN_SPLIT" val="" rmk="列分隔符（缺少值时默认为制表符\t）"/>
+          <ITEM key="ROW_SPLIT" val="" rmk="行分隔符（缺少值时默认为换行符\n）"/>
+          <ITEM key="DATA_SOURCE" val="151" rmk="数据来源"/>
+          <ITEM key="SECURITY_SOFTWARE_ORGCODE" val="1430015" rmk="厂家组织机构代码"/>
+          <ITEM key="CALLBACK_SEQUENCE" val="1" rmk="数据起始行，可选项，不填写默认为第1行"/>
+          <ITEM key="CALLBACK_RECORDS" val="UTF-8" rmk="可选项，默认为UTF-8，BCP文件编码格式（采用不带格式的编码方式，如：UTF-8无BOM）"/>
+          <ITEM key="DATA_SET" val="WA_BASIC_0009" rmk="数据集代码"/>
+          <DATASET name="WA_BASIC_0009" rmk="BCP数据文件信息">
+            <DATA>
+              <ITEM key="TRANSFILE" val="WA_BASIC_0009" rmk="文件路径"/>
+              <ITEM key="FILE_NAME" val="1430015-1521627338-00001-WA_BASIC_0009-0.bcp" rmk="文件名"/>
+              <ITEM key="TEXT_FORMAT" val="5000" rmk="记录行数"/>
+              <ITEM key="FILE_NAME" val="1430015-1521627338-00002-WA_BASIC_0009-0.bcp" rmk="文件名"/>
+              <ITEM key="TEXT_FORMAT" val="5000" rmk="记录行数"/>
+            </DATA>
+          </DATASET>
+          <DATASET name="WA_BASIC_0009" rmk="BCP文件数据结构">
+            <DATA>
+              <ITEM key="NAME" eng="NAME" rmk="用户姓名"/>
+              <ITEM key="SEXCODE" eng="SEXCODE" rmk="性别"/>
+              <ITEM key="CERTIFICATE_TYPE" eng="CERTIFICATE_TYPE" rmk="证件类型"/>
+              <ITEM key="CERTIFICATE_CODE" eng="CERTIFICATE_CODE" rmk="证件号码"/>
+              <ITEM key="MOBILE" eng="MOBILE" rmk="手机号码"/>
+              <ITEM key="REG_ACCOUNT_TYPE" eng="REG_ACCOUNT_TYPE" rmk="网络应用代码"/>
+              <ITEM key="ACCOUNT_ID" eng="ACCOUNT_ID" rmk="用户ID"/>
+              <ITEM key="REG_ACCOUNT" eng="REG_ACCOUNT" rmk="注册帐号"/>
+              <ITEM key="REGIS_NICKNAME" eng="REGIS_NICKNAME" rmk="注册昵称"/>
+              <ITEM key="REGIS_TIME" eng="REGIS_TIME" rmk="注册时间"/>
+              <ITEM key="IP_ADDRESS" eng="IP_ADDRESS" rmk="注册IP地址"/>
+              <ITEM key="PORT" eng="PORT" rmk="注册端口"/>
+              <ITEM key="MAC_ADDRESS" eng="MAC_ADDRESS" rmk="注册MAC地址"/>
+              <ITEM key="POSTAL_ADDRESS" eng="POSTAL_ADDRESS" rmk="联系地址"/>
+              <ITEM key="CONTACTOR_TEL" eng="CONTACTOR_TEL" rmk="联系电话"/>
+              <ITEM key="BIRTHDAY" eng="BIRTHDAY" rmk="出生日期"/>
+              <ITEM key="COMPANY" eng="COMPANY" rmk="公司名"/>
+              <ITEM key="SAFE_QUESTION" eng="SAFE_QUESTION" rmk="安全问题"/>
+              <ITEM key="SAFE_ANSWER" eng="SAFE_ANSWER" rmk="安全问题答案"/>
+              <ITEM key="ACTIVITE_TYPE" eng="ACTIVITE_TYPE" rmk="激活类型"/>
+              <ITEM key="ACTIVITE_ACCOUNT" eng="ACTIVITE_ACCOUNT" rmk="激活用帐号"/>
+              <ITEM key="PASSWORD" eng="PASSWORD" rmk="密码"/>
+              <ITEM key="IMEI" eng="IMEI" rmk="注册IMEI"/>
+              <ITEM key="IMSI" eng="IMSI" rmk="注册IMSI"/>
+              <ITEM key="LONGITUDE" eng="LONGITUDE" rmk="注册经度"/>
+              <ITEM key="LATITUDE" eng="LATITUDE" rmk="注册纬度"/>
+              <ITEM key="SITE_ADDRESS" eng="SITE_ADDRESS" rmk="注册地址"/>
+              <ITEM key="ORIGIN_PLACE" eng="ORIGIN_PLACE" rmk="籍贯"/>
+              <ITEM key="OFTEN_ADDRESS" eng="OFTEN_ADDRESS" rmk="居住地"/>
+              <ITEM key="DATA_LAND" eng="DATA_LAND" rmk="数据产生时的行政区划"/>
+            </DATA>
+          </DATASET>
+        </DATA>
+      </DATASET>
+    </DATA>
+  </DATASET>
+</MESSAGE>
