@@ -4,5 +4,7 @@
 *.swp
 *.swo
 beego.iml
-.output
-.tempdata
+output
+tempdata
+/.idea
+/.vscode

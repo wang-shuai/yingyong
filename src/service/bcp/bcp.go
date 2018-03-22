@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"../model"
 	"io/ioutil"
-	"archive/zip"
+	"github.com/alexmullins/zip"
 	"time"
 	"strconv"
+	"io"
+	"bytes"
 )
 
 type BcpOperation struct {
@@ -50,19 +52,24 @@ func (bo *BcpOperation) ZipUserInfo() {
 	}
 
 	fzip, _ := os.Create(path + zipname)
-	w := zip.NewWriter(fzip)
-	defer w.Close()
+	zipw  := zip.NewWriter(fzip)
+	defer zipw.Close()
 	for _, file := range files {
-		fw, _ := w.Create(file.Name())
-		filecontent, err := ioutil.ReadFile(filedir + file.Name())
-		if err != nil {
-			fmt.Println("写入zip包时读取文件失败：", filedir+file.Name(), err)
-			continue
-		}
-		_, err = fw.Write(filecontent)
+		w, err := zipw.Encrypt(file.Name(), `golang`)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
+		contents, err := ioutil.ReadFile(filedir + file.Name())
+		if err != nil {
+			fmt.Println("写入zip包时读取文件失败：", filedir+file.Name(), err)
+			continue
+		}
+		_, err = io.Copy(w, bytes.NewReader(contents))
+		if err != nil {
+			fmt.Println("写入zip包时copy文件数据流失败：", filedir+file.Name(), err)
+			continue
+		}
 	}
+	zipw.Flush()
 }
