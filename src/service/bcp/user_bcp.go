@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"../data"
 )
 type UserBcp struct {
 }
@@ -17,7 +18,7 @@ type UserBcp struct {
 func (this * UserBcp) WriteUserBcp() (map[string]int64,error) {
 	clean()
 
-	cnt, err := CountAllUserInfos()
+	cnt, err := data.CountAllUserInfos()
 	if err != nil {
 		fmt.Println("获取用户总条数错误：", err)
 		return nil,err
@@ -67,7 +68,7 @@ func (this * UserBcp) WriteUserBcp() (map[string]int64,error) {
 func writeUserInfoToFile(start, end int64, bcpname string) {
 
 	var users []model.User
-	users, err := GetAllUserInfos(start, end)
+	users, err := data.GetAllUserInfos(start, end)
 	if err != nil {
 		fmt.Println("获取全部用户异常：", err)
 		return

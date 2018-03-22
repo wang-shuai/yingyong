@@ -7,5 +7,9 @@
   "ucardb":{
     "schema": "mssql",
     "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=30"
+  },
+  "ucarleadsdb":{
+    "schema": "mssql",
+    "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=30"
   }
 }

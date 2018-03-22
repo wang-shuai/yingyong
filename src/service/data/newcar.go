@@ -1,40 +1,13 @@
-package bcp
+package data
 
 import (
-	"../model"
 	"fmt"
-	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/go-xorm/core"
-	"github.com/go-xorm/xorm"
+	"../model"
 )
-
-var (
-	engine *xorm.Engine
-)
-
-func init() {
-	defer func() {
-		fmt.Println("recover")
-		recover()
-	}()
-
-	schema,_ := model.Cfg.String("newcardb.schema")
-	connStr,_ := model.Cfg.String("newcardb.connectionString")
-
-	if Eg, err := xorm.NewEngine(schema, connStr); err != nil {
-		fmt.Println(err)
-		panic("数据库链接失败")
-	} else {
-		engine = Eg
-	}
-
-	engine.SetMapper(core.SameMapper{}) //与字段、表名一致  不区分大小写
-	engine.ShowSQL(true)                //展示每次执行的sql
-}
 
 func CountAllUserInfos() (int64, error) {
 	var u model.User
-	total, err := engine.Table("LoanUser").Where("IsDeleted=0").Count(&u)
+	total, err := newcar_engine.Table("LoanUser").Where("IsDeleted=0").Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -52,9 +25,9 @@ func GetAllUserInfos(start, end int64) ([]model.User, error) {
 	'' as Site_Address,'' as Origin_Place,'' as Often_Address, '' as Data_Land
 	 from LoanUser where IsDeleted=0`
 
-	sql := `select t.* from (%s) as t where row between %d and %d`
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
 
-	err := engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 
 	return entities, err
 }
