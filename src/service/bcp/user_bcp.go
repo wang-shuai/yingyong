@@ -14,7 +14,7 @@ type UserBcp struct {
 }
 
 // 写入文件 并返回文件列表
-func (this * UserBcp) WriteUserBcp() ([]string,error) {
+func (this * UserBcp) WriteUserBcp() (map[string]int64,error) {
 	clean()
 
 	cnt, err := CountAllUserInfos()
@@ -24,7 +24,7 @@ func (this * UserBcp) WriteUserBcp() ([]string,error) {
 	}
 	//fmt.Println("注册用户总数量：", cnt)
 
-	var filelist []string = make([]string, 0)
+	filelist := make(map[string]int64)
 
 	var start, end int64
 	var bcpname string
@@ -46,7 +46,11 @@ func (this * UserBcp) WriteUserBcp() ([]string,error) {
 		end = start + pagesize
 
 		bcpname = strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(timespan, 10) + "-" + fmt.Sprintf("%05d", i) + "-" + model.UserCode + "-0.bcp"
-		filelist = append(filelist, bcpname)
+		if i==pagecnt{
+			filelist[bcpname] = cnt%pagesize
+		}else{
+			filelist[bcpname] = pagesize
+		}
 
 		wg.Add(1)
 		go func(start, end int64, name string) {
@@ -82,8 +86,7 @@ func writeUserInfoToFile(start, end int64, bcpname string) {
 	}
 	//fmt.Println(content)
 
-	base, _ := os.Getwd()
-	dir := base + model.UserDir
+	dir := model.Basepath + model.UserDir
 	if _, err := os.Open(dir); err != nil {
 		os.MkdirAll(dir, os.ModePerm)
 	}
@@ -101,7 +104,6 @@ func writeUserInfoToFile(start, end int64, bcpname string) {
 
 //清空 目录下文件 重新生成
 func clean(){
-	base, _ := os.Getwd()
-	dir := base + model.UserDir
+	dir := model.Basepath + model.UserDir
 	os.RemoveAll(dir)
 }

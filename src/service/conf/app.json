@@ -1,6 +1,11 @@
 {
-  "db":{
+  "zippwd":"golang",
+  "newcardb":{
     "schema": "mssql",
     "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=30"
+  },
+  "ucardb":{
+    "schema": "mssql",
+    "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=30"
   }
 }

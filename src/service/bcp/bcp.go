@@ -21,19 +21,23 @@ const (
 )
 
 func (bo *BcpOperation) ZipUserInfo() {
-	now := time.Now()
-
 	user := new(UserBcp)
-	filelist, err := user.WriteUserBcp()
+	filelist, err := user.WriteUserBcp()//写bcp文件
 	if err != nil {
 		fmt.Println("写入注册用户bcp文件失败：", err)
 		return
 	}
 	idx := new(index.Index)
-	idx.BuildUserIdx(filelist)
+	idx.BuildUserIdx(filelist)//写索引文件
 
-	base, _ := os.Getwd()
-	filedir := base + model.UserDir
+	filedir := model.Basepath + model.UserDir
+
+	bcpzip(filedir,model.UserCode) //加密打包zip
+
+}
+
+func bcpzip(filedir,code string){
+	now := time.Now()
 	files, err := ioutil.ReadDir(filedir)
 	if err != nil {
 		fmt.Println("打开用户bcp临时文件失败：", err)
@@ -46,7 +50,7 @@ func (bo *BcpOperation) ZipUserInfo() {
 	timepath := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
 	zipname := strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(now.Unix(), 10) + "-11-1-00001.zip"
 
-	path = base + model.OutputDir + datepath + string(os.PathSeparator) + model.UserCode + string(os.PathSeparator) + timepath + string(os.PathSeparator)
+	path = model.Basepath + model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
 	if _, err := os.Open(path); err != nil {
 		os.MkdirAll(path, os.ModePerm)
 	}
@@ -54,8 +58,9 @@ func (bo *BcpOperation) ZipUserInfo() {
 	fzip, _ := os.Create(path + zipname)
 	zipw  := zip.NewWriter(fzip)
 	defer zipw.Close()
+	pwd,_:=model.Cfg.String("zippwd")
 	for _, file := range files {
-		w, err := zipw.Encrypt(file.Name(), `golang`)
+		w, err := zipw.Encrypt(file.Name(), pwd)
 		if err != nil {
 			fmt.Println(err)
 			continue

@@ -6,8 +6,6 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
-	"gitlab.dev.daikuan.com/platform/servicecenter/lib/go/servicecenter/pkg/config"
-	"github.com/tidwall/gjson"
 )
 
 var (
@@ -20,8 +18,8 @@ func init() {
 		recover()
 	}()
 
-	schema := gjson.Get(config.AppConfig.Json, "db.schema").String()
-	connStr := gjson.Get(config.AppConfig.Json, "db.connectionString").String()
+	schema,_ := model.Cfg.String("newcardb.schema")
+	connStr,_ := model.Cfg.String("newcardb.connectionString")
 
 	if Eg, err := xorm.NewEngine(schema, connStr); err != nil {
 		fmt.Println(err)
