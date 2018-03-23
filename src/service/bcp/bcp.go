@@ -67,6 +67,21 @@ func ZipCollectionInfo() {
 	bcpzip(filedir, model.CollectionCode) //加密打包zip
 }
 
+func ZipSubscribeInfo() {
+	filedir := model.Basepath + model.SubscribeDir
+	clean(filedir)
+	user := new(SubscribeBcp)
+	filelist, err := user.WriteSubscribeBcp() //写bcp文件
+	if err != nil {
+		fmt.Println("写入收藏bcp文件失败：", err)
+		return
+	}
+	idx := new(index.Index)
+	idx.BuildSubscribeIdx(filelist) //写索引文件
+
+	bcpzip(filedir, model.SubscribeCode) //加密打包zip
+}
+
 // 写入文件 并返回文件列表
 func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, string)) (map[string]int64, error) {
 

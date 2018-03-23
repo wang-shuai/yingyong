@@ -1,0 +1,122 @@
+{
+  "struct": [
+    {
+      "name": "SRC_IP",
+      "desc": "源IPv4地址"
+    },
+    {
+      "name": "DST_IP",
+      "desc": "目的IPv4地址"
+    },
+    {
+      "name": "SRC_PORT",
+      "desc": "源IPv4端口"
+    },
+    {
+      "name": "DST_PORT",
+      "desc": "目的IPv4端口"
+    },
+    {
+      "name": "MAC",
+      "desc": "客户端MAC地址"
+    },
+    {
+      "name": "CAPTURE_TIME",
+      "desc": "数据产生时间"
+    },
+    {
+      "name": "IMSI",
+      "desc": "国际移动用户标识号"
+    },
+    {
+      "name": "EQUIPMENT_ID",
+      "desc": "移动设备特征码"
+    },
+    {
+      "name": "HARDWARE_SIGNATURE",
+      "desc": "硬件特征码"
+    },
+    {
+      "name": "LONGITUDE",
+      "desc": "数据产生时的经度"
+    },
+    {
+      "name": "LATITUDE",
+      "desc": "数据产生时的纬度"
+    },
+    {
+      "name": "TERMINAL_TYPE",
+      "desc": "终端类型"
+    },
+    {
+      "name": "TERMINAL_MODEL",
+      "desc": "终端型号"
+    },
+    {
+      "name": "TERMINAL_OS_TYPE",
+      "desc": "终端操作系统类型"
+    },
+    {
+      "name": "SOFTWARE_NAME",
+      "desc": "软件名称"
+    },
+    {
+      "name": "DATA_LAND",
+      "desc": "数据产生时的行政区划"
+    },
+    {
+      "name": "APPLICATION",
+      "desc": "_TYPE",
+      "desc": "网络应用代码"
+    },
+    {
+      "name": "IDENTIFICATION_TYPE",
+      "desc": "合作账号类型"
+    },
+    {
+      "name": "A_IDEN_ID",
+      "desc": "用户ID"
+    },
+    {
+      "name": "A_IDEN_STRING",
+      "desc": "用户账号"
+    },
+    {
+      "name": "A_PHONE",
+      "desc": "手机号"
+    },
+    {
+      "name": "ACTION_TYPE",
+      "desc": "操作类型（关注/订阅/取消关注/取消订阅）"
+    },
+    {
+      "name": "UPDATE_time",
+      "desc": "操作时间"
+    },
+    {
+      "name": "B_IDEN_ID",
+      "desc": "被关注/订阅用户ID"
+    },
+    {
+      "name": "SUB_NAME",
+      "desc": "关注/订阅名称（文件/频道）"
+    },
+    {
+      "name": "SUB_ID",
+      "desc": "关注/订阅（文件/频道）ID"
+    },
+    {
+      "name": "SUB_NUM",
+      "desc": "关注/订阅数量"
+    },
+    {
+      "name": "FILE_SIZE",
+      "desc": "关注/订阅文件大小"
+    },
+    {
+      "name": "MAINFILE",
+      "desc": "关注/订阅文件实体"
+    }
+  ]
+}
+

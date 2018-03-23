@@ -57,13 +57,40 @@ func GetCollections(start, end int64) ([]model.Collection, error) {
 	all := `select ROW_NUMBER() over(order by c.[CreateTime] desc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,c.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
-		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
 		isnull(c.UserID,'') as USER_INTENRALID,'' as USER_ACCOUNT,c.InfoID as NEWS_ID,'' as LABEL,'' as LIKE_TYPE,
 		c.CreateTime as ACTION_TIME,'' as FILE_MD5,'' as FILE_ID,c.LinkUrl as FILE_URL,'E6' as ACTION_TYPE,
 		c.InfoID as GOODS_ID,c.InfoDesc as GOODS_NAME,'' as GOODS_COMMENT,b.DisplayPrice as GOODS_PRICE,'' as SHOP_ID,
 		'' as SHOP_NAME,'' as COLLECTPOSITION_NAME,'' as COLLECTPOSITION_ADDRESS from Iucar_Collection  c
 		left join ucarbasicinfo b on c.InfoID=b.UcarID
 		where c.Status=1 and c.type =1 and c.CreateTime > '2016-01-01'`
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
+	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	return entities, err
+}
+
+
+// 关注
+func CountSubscribe() (int64, error) {
+	var u model.Subscribe
+	total, err := ucar_engine.Table("Iucar_Collection").Where("Status=1 and type =1 and CreateTime > '2016-01-01'").Count(&u)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
+	var entities []model.Subscribe
+	all := `select ROW_NUMBER() over(order by [CreateTime] desc) as row,
+		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,CreateTime as CAPTURE_TIME,'' as IMSI,
+		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+			'' as IDENTIFICATION_TYPE,isnull(UserId,'') as A_IDEN_ID,Phone as A_IDEN_STRING,Phone as A_PHONE,
+			26 as ACTION_TYPE,LastAlterTime as UPDATE_time,'' as B_IDEN_ID,ResultFullUrl as SUB_NAME,KeyId as SUB_ID,
+		(select count(1) from M_Subscribe  where Status=1 and phone=m.Phone group by Phone ) as SUB_NUM,
+		'' as FILE_SIZE,'' as MAINFILE
+		from M_Subscribe as m  where Status=1 and phone is not null`
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

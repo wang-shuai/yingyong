@@ -2,12 +2,11 @@ package main
 
 import (
 	"./bcp"
-	//"fmt"
-	//"./data"
 )
 
 func main() {
 	bcp.ZipUserInfo()
 	bcp.ZipDealerInfo()
 	bcp.ZipCollectionInfo()
+	bcp.ZipSubscribeInfo()
 }

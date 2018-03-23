@@ -77,8 +77,7 @@ func writeCollectionInfoToFile(start, end int64, bcpname string) {
 			collection.SHOP_ID,
 			collection.SHOP_NAME,
 			collection.COLLECTPOSITION_NAME,
-			collection.COLLECTPOSITION_ADDRESS,
-		}, "\t")
+			collection.COLLECTPOSITION_ADDRESS}, "\t")
 
 		content += line + "\n"
 	}
