@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"github.com/beevik/etree"
 	"../model"
+	"fmt"
+	"github.com/olebedev/config"
 )
 
 type Index struct {
@@ -92,7 +94,7 @@ func getTemplateIdx(code string) (*etree.Document, *etree.Element) {
 	return doc, dt
 }
 
-func buildUserFileRef(dt *etree.Element, code string, filelist map[string]int64) {
+func buildFileRef(dt *etree.Element, code string, filelist map[string]int64) {
 	ds := dt.CreateElement("DATASET")
 	ds.CreateAttr("name", code)
 	ds.CreateAttr("rmk", "BCP数据文件信息")
@@ -116,5 +118,33 @@ func buildUserFileRef(dt *etree.Element, code string, filelist map[string]int64)
 		item.CreateAttr("val", strconv.FormatInt(cnt, 10))
 		item.CreateAttr("rmk", "记录行数")
 	}
+}
 
+func buildBcpDataStructure(dt *etree.Element, code, idxjsonpath string) {
+	ds := dt.CreateElement("DATASET")
+	ds.CreateAttr("name", code)
+	ds.CreateAttr("rmk", "BCP文件数据结构")
+	data := ds.CreateElement("DATA")
+
+	conf, err := config.ParseJsonFile(idxjsonpath)
+	if err != nil {
+		fmt.Println("获取用户描述json异常：", err)
+		return
+	}
+
+	usermap, err := conf.List("struct")
+	if err != nil {
+		fmt.Println("获取用户描述字段错误：", err)
+		return
+	}
+
+	var item *etree.Element
+	for i := 0; i < len(usermap); i++ {
+		item = data.CreateElement("ITEM")
+		name, _ := conf.String(fmt.Sprintf("struct.%d.name", i))
+		desc, _ := conf.String(fmt.Sprintf("struct.%d.desc", i))
+		item.CreateAttr("key", name)
+		item.CreateAttr("eng", name)
+		item.CreateAttr("rmk", desc)
+	}
 }

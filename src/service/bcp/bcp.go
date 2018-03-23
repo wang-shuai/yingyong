@@ -11,32 +11,93 @@ import (
 	"strconv"
 	"io"
 	"bytes"
+	"sync"
 )
-
-type BcpOperation struct {
-}
 
 const (
 	pagesize int64 = 5000
 )
 
-func (bo *BcpOperation) ZipUserInfo() {
+func ZipUserInfo() {
+
+	filedir := model.Basepath + model.UserDir
+	clean(filedir)
+
 	user := new(UserBcp)
-	filelist, err := user.WriteUserBcp()//写bcp文件
+	filelist, err := user.WriteUserBcp() //写bcp文件
 	if err != nil {
 		fmt.Println("写入注册用户bcp文件失败：", err)
 		return
 	}
 	idx := new(index.Index)
-	idx.BuildUserIdx(filelist)//写索引文件
+	idx.BuildUserIdx(filelist) //写索引文件
 
-	filedir := model.Basepath + model.UserDir
-
-	bcpzip(filedir,model.UserCode) //加密打包zip
-
+	bcpzip(filedir, model.UserCode) //加密打包zip
 }
 
-func bcpzip(filedir,code string){
+func ZipDealerInfo() {
+
+	filedir := model.Basepath + model.DealerDir
+	clean(filedir)
+	user := new(DealerBcp)
+	filelist, err := user.WriteDealerBcp() //写bcp文件
+	if err != nil {
+		fmt.Println("写入注册商户bcp文件失败：", err)
+		return
+	}
+	idx := new(index.Index)
+	idx.BuildDealerIdx(filelist) //写索引文件
+
+	bcpzip(filedir, model.DealerCode) //加密打包zip
+}
+
+// 写入文件 并返回文件列表
+func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, string)) (map[string]int64, error) {
+
+	clean(dir)
+
+	filelist := make(map[string]int64)
+
+	var start, end int64
+	var bcpname string
+	var pagecnt int64 = 1
+	if total > pagesize {
+		if total%pagesize == 0 {
+			pagecnt = total / pagesize
+		} else {
+			pagecnt = 1 + total/pagesize
+		}
+	}
+
+	now := time.Now()
+	timespan := now.Unix()
+	var wg sync.WaitGroup
+	for i := int64(1); i <= pagecnt; i++ {
+
+		start = (i - 1) * pagesize
+		end = start + pagesize
+
+		bcpname = strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(timespan, 10) + "-" + fmt.Sprintf("%05d", i) + "-" + code + "-0.bcp"
+		if i == pagecnt {
+			filelist[bcpname] = total % pagesize
+		} else {
+			filelist[bcpname] = pagesize
+		}
+
+		wg.Add(1)
+		go func(start, end int64, name string) {
+			defer wg.Done() //wg.Add(-1)
+			writeToFile(start, end, name)
+		}(start, end, bcpname)
+	}
+	wg.Wait()
+	fmt.Println("所有的线程执行结束")
+
+	return filelist, nil
+}
+
+func bcpzip(filedir, code string) {
+
 	now := time.Now()
 	files, err := ioutil.ReadDir(filedir)
 	if err != nil {
@@ -56,9 +117,9 @@ func bcpzip(filedir,code string){
 	}
 
 	fzip, _ := os.Create(path + zipname)
-	zipw  := zip.NewWriter(fzip)
+	zipw := zip.NewWriter(fzip)
 	defer zipw.Close()
-	pwd,_:=model.Cfg.String("zippwd")
+	pwd, _ := model.Cfg.String("zippwd")
 	for _, file := range files {
 		w, err := zipw.Encrypt(file.Name(), pwd)
 		if err != nil {
@@ -77,4 +138,9 @@ func bcpzip(filedir,code string){
 		}
 	}
 	zipw.Flush()
+}
+
+//清空 目录下文件 重新生成
+func clean(tdir string) {
+	os.RemoveAll(tdir)
 }

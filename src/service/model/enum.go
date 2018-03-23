@@ -10,6 +10,7 @@ const (
 
 const (
 	UserCode   = "WA_BASIC_0009"  // 注册用户
+	DealerCode = "WA_BASIC_0009_04" //商户信息
 	LoginCode  = "WA_SOURCE_0029" //登陆日志
 	FocusCode  = "WA_SOURCE_0078" //关注订阅
 	BrowseCode = "WA_SOURCE_0065" // 浏览
@@ -17,6 +18,7 @@ const (
 
 const (
 	UserDir   = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "user" + string(os.PathSeparator)   // 注册用户
+	DealerDir   = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "dealer" + string(os.PathSeparator)   // 注册用户
 	LoginDir  = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "login" + string(os.PathSeparator)  //登陆日志
 	FocusDir  = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "focus" + string(os.PathSeparator)  //关注订阅
 	BrowseDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "browse" + string(os.PathSeparator) // 浏览

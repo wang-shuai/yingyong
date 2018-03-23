@@ -14,7 +14,7 @@ type User struct {
 	Ip_Address       string //	注册IP地址
 	Port             string //	注册端口
 	Mac_Address      string //	注册MAC地址
-	Postal_ddress    string //	联系地址
+	Postal_Address    string //	联系地址
 	Contactor_Tel    string //	联系电话
 	Birthday         string //	出生日期
 	Company          string //	公司名

@@ -1,5 +1,5 @@
 {
-    "user":[
+    "struct":[
     {
         "name":"NAME",
         "desc":"用户姓名"

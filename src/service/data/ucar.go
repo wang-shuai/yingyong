@@ -13,7 +13,7 @@ func CountUCarDealer() (int64, error) {
 	//				join Dealer_Vendor_Account a on a.DVAId = u.DVAId
 	//				where u.Status=1 and a.Status !=-1`).Count(&u)
 	total, err := ucar_engine.Table("Dealer_Vendor_Account").Alias("a").
-	Join("inner",[]string{"Dealer_Vendor_Account","u"},"a.DVAId = u.DVAId").
+	Join("inner",[]string{"Dealer_Vendor_user","u"},"a.DVAId = u.DVAId").
 	Where("u.Status=1 and a.Status !=-1").Count(&u)
 
 	if err != nil {
