@@ -24,10 +24,8 @@ func GetAllUserInfos(start, end int64) ([]model.User, error) {
 	'03' as Activite_Type, Telphone as Activite_Account,Password,''as IMEI,'' as IMSI,'' as Longitude,'' as Latitude,
 	'' as Site_Address,'' as Origin_Place,'' as Often_Address, '' as Data_Land
 	 from LoanUser where IsDeleted=0`
-
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
-
 	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
-
 	return entities, err
 }
+

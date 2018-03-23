@@ -1,0 +1,145 @@
+{
+  "struct": [
+    {
+      "name": "SRC_IP",
+      "desc": "源IPv4地址"
+    },
+    {
+      "name": "DST_IP",
+      "desc": "目的IPv4地址"
+    },
+    {
+      "name": "SRC_PORT",
+      "desc": "源IPv4端口"
+    },
+    {
+      "name": "DST_PORT",
+      "desc": "目的IPv4端口"
+    },
+    {
+      "name": "MAC",
+      "desc": "客户端MAC地址"
+    },
+    {
+      "name": "CAPTURE_TIME",
+      "desc": "数据产生时间"
+    },
+    {
+      "name": "IMSI",
+      "desc": "国际移动用户标识号"
+    },
+    {
+      "name": "EQUIPMENT_ID",
+      "desc": "移动设备特征码"
+    },
+    {
+      "name": "HARDWARE_SIGNATURE",
+      "desc": "硬件特征码"
+    },
+    {
+      "name": "LONGITUDE",
+      "desc": "数据产生时的经度"
+    },
+    {
+      "name": "LATITUDE",
+      "desc": "数据产生时的纬度"
+    },
+    {
+      "name": "TERMINAL_TYPE",
+      "desc": "终端类型"
+    },
+    {
+      "name": "TERMINAL_MODEL",
+      "desc": "终端型号"
+    },
+    {
+      "name": "TERMINAL_OS_TYPE",
+      "desc": "终端操作系统类型"
+    },
+    {
+      "name": "SOFTWARE_NAME",
+      "desc": "软件名称"
+    },
+    {
+      "name": "DATA_LAND",
+      "desc": "数据产生时的行政区划"
+    },
+    {
+      "name": "APPLICATION_TYPE",
+      "desc": "网络应用代码"
+    },
+    {
+      "name": "USER_INTENRALID",
+      "desc": "用户ID"
+    },
+    {
+      "name": "USER_ACCOUNT",
+      "desc": "用户账号"
+    },
+    {
+      "name": "NEWS_ID",
+      "desc": "新闻/信息/消息/ID"
+    },
+    {
+      "name": "LABEL",
+      "desc": "收藏标签（分类）"
+    },
+    {
+      "name": "LIKE_TYPE",
+      "desc": "点赞类型（支持/反对）"
+    },
+    {
+      "name": "ACTION_TIME",
+      "desc": "时间"
+    },
+    {
+      "name": "FILE_MD5",
+      "desc": "文件特征值MD5"
+    },
+    {
+      "name": "FILE_ID",
+      "desc": "文件ID"
+    },
+    {
+      "name": "FILE_URL",
+      "desc": "文件路径/URL"
+    },
+    {
+      "name": "ACTION_TYPE",
+      "desc": "操作类型（收藏/点赞）"
+    },
+    {
+      "name": "GOODS_ID",
+      "desc": "浏览商品ID"
+    },
+    {
+      "name": "GOODS_NAME",
+      "desc": "新闻信息消息标题/商品名称"
+    },
+    {
+      "name": "GOODS_COMMENT",
+      "desc": "商品评论"
+    },
+    {
+      "name": "GOODS_PRICE",
+      "desc": "商品价格"
+    },
+    {
+      "name": "SHOP_ID",
+      "desc": "商家ID"
+    },
+    {
+      "name": "SHOP_NAME",
+      "desc": "商家名称"
+    },
+    {
+      "name": "COLLECTPOSITION_NAME",
+      "desc": "收藏位置名称（家、公司等）"
+    },
+    {
+      "name": "COLLECTPOSITION_ADDRESS",
+      "desc": "收藏位置详细地址"
+    }
+  ]
+}
+
