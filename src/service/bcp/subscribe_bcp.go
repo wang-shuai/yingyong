@@ -27,7 +27,7 @@ func writeSubscribeInfoToFile(start, end int64, bcpname string) {
 	var subscribes []model.Subscribe
 	subscribes, err := data.GetSubscribes(start, end)
 	if err != nil {
-		fmt.Println("获取全部用户异常：", err)
+		fmt.Println("获取全部订阅信息异常：", err)
 		return
 	}
 	var content string

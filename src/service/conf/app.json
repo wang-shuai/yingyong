@@ -1,15 +1,23 @@
 {
-  "zippwd":"golang",
-  "newcardb":{
-    "schema": "mssql",
-    "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=30"
+  "zippwd":"run1234!@#",
+  "db":{
+    "newcar":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=30"
+    },
+    "ucar":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=30"
+    },
+    "ucarleads":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=30"
+    }
   },
-  "ucardb":{
-    "schema": "mssql",
-    "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=30"
-  },
-  "ucarleadsdb":{
-    "schema": "mssql",
-    "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=30"
+  "ftp":{
+    "server":"192.168.145.9",
+    "port":"21",
+    "username":"wangshuai",
+    "password":"wangshuai"
   }
 }

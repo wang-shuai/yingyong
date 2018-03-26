@@ -27,7 +27,7 @@ func writeDealerInfoToFile(start, end int64, bcpname string) {
 	var users []model.DealerAccount
 	users, err := data.GetUCarDealers(start, end)
 	if err != nil {
-		fmt.Println("获取全部用户异常：", err)
+		fmt.Println("获取全部商户异常：", err)
 		return
 	}
 	var content string

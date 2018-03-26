@@ -20,12 +20,12 @@ func init() {
 		recover()
 	}()
 
-	schema_n, _ := model.Cfg.String("newcardb.schema")
-	connStr_n, _ := model.Cfg.String("newcardb.connectionString")
-	schema_u, _ := model.Cfg.String("ucardb.schema")
-	connStr_u, _ := model.Cfg.String("ucardb.connectionString")
-	schema_l, _ := model.Cfg.String("ucarleadsdb.schema")
-	connStr_l, _ := model.Cfg.String("ucarleadsdb.connectionString")
+	schema_n, _ := model.Cfg.String("db.newcar.schema")
+	connStr_n, _ := model.Cfg.String("db.newcar.connectionString")
+	schema_u, _ := model.Cfg.String("db.ucar.schema")
+	connStr_u, _ := model.Cfg.String("db.ucar.connectionString")
+	schema_l, _ := model.Cfg.String("db.ucarleads.schema")
+	connStr_l, _ := model.Cfg.String("db.ucarleads.connectionString")
 
 	if Eg, err := xorm.NewEngine(schema_n, connStr_n); err != nil {
 		fmt.Println(err)

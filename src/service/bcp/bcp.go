@@ -12,10 +12,16 @@ import (
 	"io"
 	"bytes"
 	"sync"
+	"../ftp"
+	"strings"
 )
 
 const (
 	pagesize int64 = 5000
+)
+
+var (
+	ftpOp = new(ftp.FtpOperation)
 )
 
 func ZipUserInfo() {
@@ -105,8 +111,8 @@ func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, stri
 	var wg sync.WaitGroup
 	for i := int64(1); i <= pagecnt; i++ {
 
-		start = (i - 1) * pagesize
-		end = start + pagesize
+		start = (i - 1) * pagesize + 1
+		end = i * pagesize
 
 		bcpname = strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(timespan, 10) + "-" + fmt.Sprintf("%05d", i) + "-" + code + "-0.bcp"
 		if i == pagecnt {
@@ -142,14 +148,15 @@ func bcpzip(filedir, code string) {
 	timepath := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
 	zipname := strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(now.Unix(), 10) + "-11-1-00001.zip"
 
-	path = model.Basepath + model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
+	fdir := model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
+	path = model.Basepath + fdir
 	if _, err := os.Open(path); err != nil {
 		os.MkdirAll(path, os.ModePerm)
 	}
 
 	fzip, _ := os.Create(path + zipname)
 	zipw := zip.NewWriter(fzip)
-	defer zipw.Close()
+	//defer zipw.Close()
 	pwd, _ := model.Cfg.String("zippwd")
 	for _, file := range files {
 		w, err := zipw.Encrypt(file.Name(), pwd)
@@ -169,6 +176,14 @@ func bcpzip(filedir, code string) {
 		}
 	}
 	zipw.Flush()
+	zipw.Close() // 非defer，关闭压缩流之后才能上传，否则上传的文件错误
+
+	//上传ftp
+	server, _ := model.Cfg.String("ftp.server")
+	port, _ := model.Cfg.String("ftp.port")
+	username, _ := model.Cfg.String("ftp.username")
+	password, _ := model.Cfg.String("ftp.password")
+	ftpOp.FtpUploadFile(strings.Join([]string{server,port},":"), username, password, path+zipname, fdir, zipname)
 }
 
 //清空 目录下文件 重新生成

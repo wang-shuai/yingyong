@@ -29,7 +29,7 @@ func writeCollectionInfoToFile(start, end int64, bcpname string) {
 	var collections []model.Collection
 	collections, err := data.GetCollections(start, end)
 	if err != nil {
-		fmt.Println("获取全部用户异常：", err)
+		fmt.Println("获取全部收藏信息异常：", err)
 		return
 	}
 	var content string
