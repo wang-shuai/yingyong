@@ -45,8 +45,8 @@ func ZipDealerInfo() {
 
 	filedir := model.Basepath + model.DealerDir
 	clean(filedir)
-	user := new(DealerBcp)
-	filelist, err := user.WriteDealerBcp() //写bcp文件
+	dealer := new(DealerBcp)
+	filelist, err := dealer.WriteDealerBcp() //写bcp文件
 	if err != nil {
 		fmt.Println("写入注册商户bcp文件失败：", err)
 		return
@@ -61,8 +61,8 @@ func ZipCollectionInfo() {
 
 	filedir := model.Basepath + model.CollectionDir
 	clean(filedir)
-	user := new(CollectionBcp)
-	filelist, err := user.WriteCollectionBcp() //写bcp文件
+	collect := new(CollectionBcp)
+	filelist, err := collect.WriteCollectionBcp() //写bcp文件
 	if err != nil {
 		fmt.Println("写入收藏bcp文件失败：", err)
 		return
@@ -74,10 +74,11 @@ func ZipCollectionInfo() {
 }
 
 func ZipSubscribeInfo() {
+	
 	filedir := model.Basepath + model.SubscribeDir
 	clean(filedir)
-	user := new(SubscribeBcp)
-	filelist, err := user.WriteSubscribeBcp() //写bcp文件
+	subscribe := new(SubscribeBcp)
+	filelist, err := subscribe.WriteSubscribeBcp() //写bcp文件
 	if err != nil {
 		fmt.Println("写入收藏bcp文件失败：", err)
 		return
@@ -90,11 +91,9 @@ func ZipSubscribeInfo() {
 
 // 写入文件 并返回文件列表
 func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, string)) (map[string]int64, error) {
-
 	clean(dir)
 
 	filelist := make(map[string]int64)
-
 	var start, end int64
 	var bcpname string
 	var pagecnt int64 = 1
