@@ -4,7 +4,6 @@ import (
 	"../model"
 	"fmt"
 	"strings"
-	"os"
 	"../data"
 	"../tool"
 )
@@ -20,16 +19,16 @@ func (this *SubscribeBcp) WriteSubscribeBcp() (map[string]int64, error) {
 		fmt.Println("获取商户总条数错误：", err)
 		return nil, err
 	}
-	return writeBcp(cnt, model.SubscribeDir, model.SubscribeCode, writeSubscribeInfoToFile)
+	return writeBcp(cnt, model.SubscribeDir, model.SubscribeCode, getSubscribeFileContent)
 }
 
-func writeSubscribeInfoToFile(start, end int64, bcpname string) {
+func getSubscribeFileContent(start, end int64) string {
 
 	var subscribes []model.Subscribe
 	subscribes, err := data.GetSubscribes(start, end)
 	if err != nil {
 		fmt.Println("获取全部订阅信息异常：", err)
-		return
+		return ``
 	}
 	var content string
 	for _, subscribe := range subscribes {
@@ -71,18 +70,5 @@ func writeSubscribeInfoToFile(start, end int64, bcpname string) {
 		content += line + "\n"
 	}
 
-	dir := model.Basepath + model.SubscribeDir
-	if _, err := os.Open(dir); err != nil {
-		os.MkdirAll(dir, os.ModePerm)
-	}
-	fpath := dir + bcpname
-
-	fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-	defer fileptr.Close()
-	if err != nil {
-		fmt.Println("创建文件失败：", fpath, err)
-		return
-	}
-
-	fileptr.WriteString(content)
+	return content
 }

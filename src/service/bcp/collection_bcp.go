@@ -4,7 +4,6 @@ import (
 	"../model"
 	"fmt"
 	"strings"
-	"os"
 	"../data"
 	"../tool"
 )
@@ -20,16 +19,16 @@ func (this *CollectionBcp) WriteCollectionBcp() (map[string]int64, error) {
 		fmt.Println("获取商户总条数错误：", err)
 		return nil, err
 	}
-	return writeBcp(cnt, model.CollectionDir, model.CollectionCode, writeCollectionInfoToFile)
+	return writeBcp(cnt, model.CollectionDir, model.CollectionCode, getCollectionFileContent)
 }
 
-func writeCollectionInfoToFile(start, end int64, bcpname string) {
+func getCollectionFileContent(start, end int64) string {
 
 	var collections []model.Collection
 	collections, err := data.GetCollections(start, end)
 	if err != nil {
 		fmt.Println("获取全部收藏信息异常：", err)
-		return
+		return ``
 	}
 	var content string
 	for _, collection := range collections {
@@ -76,19 +75,5 @@ func writeCollectionInfoToFile(start, end int64, bcpname string) {
 
 		content += line + "\n"
 	}
-
-	dir := model.Basepath + model.CollectionDir
-	if _, err := os.Open(dir); err != nil {
-		os.MkdirAll(dir, os.ModePerm)
-	}
-	fpath := dir + bcpname
-
-	fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-	defer fileptr.Close()
-	if err != nil {
-		fmt.Println("创建文件失败：", fpath, err)
-		return
-	}
-
-	fileptr.WriteString(content)
+	return content
 }

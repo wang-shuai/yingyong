@@ -4,7 +4,6 @@ import (
 	"../model"
 	"fmt"
 	"strings"
-	"os"
 	"../data"
 	"../tool"
 )
@@ -20,16 +19,16 @@ func (this *EvaluateBcp) WriteEvaluateBcp() (map[string]int64, error) {
 		fmt.Println("获取车辆评估总条数错误：", err)
 		return nil, err
 	}
-	return writeBcp(cnt, model.EvaluateDir, model.EvaluateCode, writeEvaluateInfoToFile)
+	return writeBcp(cnt, model.EvaluateDir, model.EvaluateCode, getEvaluateFileContent)
 }
 
-func writeEvaluateInfoToFile(start, end int64, bcpname string) {
+func getEvaluateFileContent(start, end int64) string {
 
 	var entities []model.EvaluateUcar
 	entities, err := data.GetEvaluates(start, end)
 	if err != nil {
 		fmt.Println("获取全部车辆评估异常：", err)
-		return
+		return ``
 	}
 	var content string
 	for _, entity := range entities {
@@ -73,19 +72,5 @@ func writeEvaluateInfoToFile(start, end int64, bcpname string) {
 		content += line + "\n"
 	}
 	//fmt.Println(content)
-
-	dir := model.Basepath + model.EvaluateDir
-	if _, err := os.Open(dir); err != nil {
-		os.MkdirAll(dir, os.ModePerm)
-	}
-	fpath := dir + bcpname
-
-	fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-	defer fileptr.Close()
-	if err != nil {
-		fmt.Println("创建文件失败：", fpath, err)
-		return
-	}
-
-	fileptr.WriteString(content)
+	return content
 }

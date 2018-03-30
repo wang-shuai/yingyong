@@ -5,6 +5,7 @@ import (
 	"../model"
 )
 
+// 注册用户
 func CountAllUserInfos() (int64, error) {
 	var u model.User
 	total, err := newcar_engine.Table("LoanUser").
@@ -35,3 +36,37 @@ func GetAllUserInfos(start, end int64) ([]model.User, error) {
 	return entities, err
 }
 
+// 贷款购车
+func CountLoanOrder() (int64, error) {
+	var u model.LoanOrder
+	total, err := newcar_engine.Table("LoanOrder").Alias("o").
+		Join("inner",[]string{"LoanUserProfile","u"},"o.userid = u.LoanUserID and u.IsDeleted=0").
+		Join("inner",[]string{"LoanOrder_Middle","m"},"o.OrderID=m.LoanOrderID and m.IsDeleted=0").
+		Where(`o.IsDeleted=0  and o.CreateTime > '2017-01-01'`).Count(&u)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func GetLoanOrders(start, end int64) ([]model.LoanOrder, error) {
+	var entities []model.LoanOrder
+	// 要排序的所有数据
+	all := `select ROW_NUMBER() over(order by u.CreateTime desc) as row,
+		o.IP as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,o.CreateTime as CAPTURE_TIME,'' as IMSI,
+		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+		o.UserID as ACCOUNT_ID, o.Telphone as ACCOUNT,r.Name as BUY_CITY, u.RealName as Name,u.CertificateNumber as SFZH,
+		'' as BANK_ACCOUNT_NUM,'' as RELATIONSHIP_MOBILEPHONE,'' as CAREER_STYLE,o.DrivingLicenceNumber as DRIVING_LICENSE,
+		m.LoanMoney as LOAN,v.bs_Name as CAR_BRAND,'' as CAR_TYPE,'' as CARD_TIME,'' as MILEAGE,'' as VEHICLE_CONDITION,
+		 '' as LICENSE_PLATE_SITE,'' as USED_CAR_PRICE
+		from loanorder o
+		join LoanUserProfile u on o.userid = u.LoanUserID and u.IsDeleted=0
+		join Region r on o.CityID = r.ID and r.Level=2
+		join LoanOrder_Middle m on o.OrderID=m.LoanOrderID and m.IsDeleted=0
+		join ViewLevelCar v on o.CarId = v.Car_Id
+		where o.IsDeleted=0  and o.CreateTime > '2017-01-01'`
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
+	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	return entities, err
+}

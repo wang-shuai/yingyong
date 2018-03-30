@@ -122,8 +122,25 @@ func ZipEvaluate() {
 	bcpzip(filedir, model.EvaluateCode) //加密打包zip
 }
 
+// 贷款购车
+func ZipLoanOrder() {
+
+	filedir := model.Basepath + model.LoanOrderDir
+	clean(filedir)
+	loanorder := new(LoanOrderBcp)
+	filelist, err := loanorder.WriteLoanOrderBcp() //写bcp文件
+	if err != nil {
+		fmt.Println("写入车辆评估bcp文件失败：", err)
+		return
+	}
+	idx := new(index.Index)
+	idx.BuildLoanOrderIdx(filelist) //写索引文件
+
+	bcpzip(filedir, model.LoanOrderCode) //加密打包zip
+}
+
 // 写入文件 并返回文件列表
-func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, string)) (map[string]int64, error) {
+func writeBcp(total int64, dir, code string, getFileContent func(int64, int64)string) (map[string]int64, error) {
 	clean(dir)
 
 	filelist := make(map[string]int64)
@@ -155,7 +172,23 @@ func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, stri
 		wg.Add(1)
 		go func(start, end int64, name string) {
 			defer wg.Done() //wg.Add(-1)
-			writeToFile(start, end, name)
+
+			content := getFileContent(start, end)
+
+			tdir := model.Basepath + dir
+			if _, err := os.Open(tdir); err != nil {
+				os.MkdirAll(tdir, os.ModePerm)
+			}
+			fpath := tdir + name
+
+			fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+			defer fileptr.Close()
+			if err != nil {
+				fmt.Println("创建文件失败：", fpath, err)
+				return
+			}
+
+			fileptr.WriteString(content)
 		}(start, end, bcpname)
 	}
 	wg.Wait()

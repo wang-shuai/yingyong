@@ -27,6 +27,6 @@ const (
 	CollectionDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "collect" + string(os.PathSeparator) // 浏览
 	EvaluateDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "evaluate" + string(os.PathSeparator) // 车辆评估
 	UcarDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "ucar" + string(os.PathSeparator) // 车源发布
-	LoanOrderDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "ucar" + string(os.PathSeparator) // 贷款购车
+	LoanOrderDir = string(os.PathSeparator) + tempdir + string(os.PathSeparator) + "loanorder" + string(os.PathSeparator) // 贷款购车
 	OutputDir = string(os.PathSeparator) + "output" + string(os.PathSeparator)   // 输出文件夹
 )
