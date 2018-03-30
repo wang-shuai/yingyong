@@ -37,6 +37,7 @@ func getUcarFileContent(start, end int64) string {
 		entity.DST_IP = tool.HandIP(entity.DST_IP)
 		entity.CAPTURE_TIME = tool.HandTimeStr(entity.CAPTURE_TIME)
 		entity.CARD_TIME = tool.HandTimeStr(entity.CARD_TIME)
+		entity.USED_CAR_URL = fmt.Sprintf("http://www.taoche.com/buycar/p-%s.html",entity.USED_CAR_ID)
 
 		line := strings.Join([]string{entity.SRC_IP,
 			entity.DST_IP,
