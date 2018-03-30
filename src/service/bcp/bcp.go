@@ -14,6 +14,7 @@ import (
 	"sync"
 	"../ftp"
 	"strings"
+	"../tool"
 )
 
 const (
@@ -74,7 +75,7 @@ func ZipCollectionInfo() {
 }
 
 func ZipSubscribeInfo() {
-	
+
 	filedir := model.Basepath + model.SubscribeDir
 	clean(filedir)
 	subscribe := new(SubscribeBcp)
@@ -87,6 +88,38 @@ func ZipSubscribeInfo() {
 	idx.BuildSubscribeIdx(filelist) //写索引文件
 
 	bcpzip(filedir, model.SubscribeCode) //加密打包zip
+}
+
+func ZipUcar() {
+
+	filedir := model.Basepath + model.UcarDir
+	clean(filedir)
+	ucar := new(UcarBcp)
+	filelist, err := ucar.WriteUcarBcp() //写bcp文件
+	if err != nil {
+		fmt.Println("写入车源发布bcp文件失败：", err)
+		return
+	}
+	idx := new(index.Index)
+	idx.BuildUcarIdx(filelist) //写索引文件
+
+	bcpzip(filedir, model.UcarCode) //加密打包zip
+}
+
+func ZipEvaluate() {
+
+	filedir := model.Basepath + model.EvaluateDir
+	clean(filedir)
+	ucar := new(EvaluateBcp)
+	filelist, err := ucar.WriteEvaluateBcp() //写bcp文件
+	if err != nil {
+		fmt.Println("写入车辆评估bcp文件失败：", err)
+		return
+	}
+	idx := new(index.Index)
+	idx.BuildEvaluateIdx(filelist) //写索引文件
+
+	bcpzip(filedir, model.EvaluateCode) //加密打包zip
 }
 
 // 写入文件 并返回文件列表
@@ -106,14 +139,13 @@ func writeBcp(total int64, dir, code string, writeToFile func(int64, int64, stri
 	}
 
 	now := time.Now()
-	timespan := now.Unix()
 	var wg sync.WaitGroup
 	for i := int64(1); i <= pagecnt; i++ {
 
 		start = (i - 1) * pagesize + 1
 		end = i * pagesize
 
-		bcpname = strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(timespan, 10) + "-" + fmt.Sprintf("%05d", i) + "-" + code + "-0.bcp"
+		bcpname = strconv.Itoa(model.AppType) + "-" + tool.HandTime(now) + "-" + fmt.Sprintf("%05d", i) + "-" + code + "-0.bcp"
 		if i == pagecnt {
 			filelist[bcpname] = total % pagesize
 		} else {
@@ -145,7 +177,7 @@ func bcpzip(filedir, code string) {
 	var path string
 	datepath := fmt.Sprintf("%4d%02d%02d", now.Year(), now.Month(), now.Day())
 	timepath := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
-	zipname := strconv.Itoa(model.AppType) + "-" + strconv.FormatInt(now.Unix(), 10) + "-11-1-00001.zip"
+	zipname := strconv.Itoa(model.AppType) + "-" + tool.HandTime(now) + "-11-1-00001.zip"
 
 	fdir := model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
 	path = model.Basepath + fdir

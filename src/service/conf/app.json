@@ -12,7 +12,8 @@
     "ucarleads":{
       "schema": "mssql",
       "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=30"
-    }
+    },
+    "showsql":true
   },
   "ftp":{
     "server":"192.168.145.9",

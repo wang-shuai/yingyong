@@ -6,8 +6,7 @@ import (
 	"strings"
 	"os"
 	"../data"
-	"time"
-	"strconv"
+	"../tool"
 )
 
 type CollectionBcp struct {
@@ -34,14 +33,10 @@ func writeCollectionInfoToFile(start, end int64, bcpname string) {
 	}
 	var content string
 	for _, collection := range collections {
-		if len(collection.ACTION_TIME) > 0 {
-			the_time, err := time.ParseInLocation("2006-01-02 15:04:05", collection.ACTION_TIME, time.Local)
-			if err == nil {
-				collection.ACTION_TIME = strconv.FormatInt(the_time.Unix(),10)
-			}else{
-				collection.ACTION_TIME = strconv.FormatInt(time.Now().Unix(),10)
-			}
-		}
+		collection.ACTION_TIME = tool.HandTimeStr(collection.ACTION_TIME)
+		collection.CAPTURE_TIME = tool.HandTimeStr(collection.CAPTURE_TIME)
+		collection.SRC_IP = tool.HandIP(collection.SRC_IP)
+		collection.DST_IP = tool.HandIP(collection.DST_IP)
 
 		line := strings.Join([]string{collection.SRC_IP,
 			collection.DST_IP,

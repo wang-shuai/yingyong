@@ -6,6 +6,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
+	"time"
 )
 
 var (
@@ -26,7 +27,7 @@ func init() {
 	connStr_u, _ := model.Cfg.String("db.ucar.connectionString")
 	schema_l, _ := model.Cfg.String("db.ucarleads.schema")
 	connStr_l, _ := model.Cfg.String("db.ucarleads.connectionString")
-
+	showsql,_ := model.Cfg.Bool("db.showsql")
 	if Eg, err := xorm.NewEngine(schema_n, connStr_n); err != nil {
 		fmt.Println(err)
 		panic("newcar数据库链接失败")
@@ -34,7 +35,7 @@ func init() {
 		newcar_engine = Eg
 	}
 	newcar_engine.SetMapper(core.SameMapper{}) //与字段、表名一致  不区分大小写
-	newcar_engine.ShowSQL(true)                //展示每次执行的sql
+	newcar_engine.ShowSQL(showsql)                //展示每次执行的sql
 
 	if Eg, err := xorm.NewEngine(schema_u, connStr_u); err != nil {
 		fmt.Println(err)
@@ -43,7 +44,7 @@ func init() {
 		ucar_engine = Eg
 	}
 	ucar_engine.SetMapper(core.SameMapper{}) //与字段、表名一致  不区分大小写
-	ucar_engine.ShowSQL(true)                //展示每次执行的sql
+	ucar_engine.ShowSQL(showsql)                //展示每次执行的sql
 
 	if Eg, err := xorm.NewEngine(schema_l, connStr_l); err != nil {
 		fmt.Println(err)
@@ -52,6 +53,9 @@ func init() {
 		uleads_engine = Eg
 	}
 	uleads_engine.SetMapper(core.SameMapper{}) //与字段、表名一致  不区分大小写
-	uleads_engine.ShowSQL(true)                //展示每次执行的sql
+	uleads_engine.ShowSQL(showsql)                //展示每次执行的sql
+
+	ucar_engine.SetConnMaxLifetime(5 * time.Minute)
+	ucar_engine.ShowExecTime(true) // showsql
 }
 

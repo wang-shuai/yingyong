@@ -14,8 +14,10 @@ func CountUCarDealer() (int64, error) {
 	//				join Dealer_Vendor_Account a on a.DVAId = u.DVAId
 	//				where u.Status=1 and a.Status !=-1`).Count(&u)
 	total, err := ucar_engine.Table("Dealer_Vendor_Account").Alias("a").
-	Join("inner",[]string{"Dealer_Vendor_user","u"},"a.DVAId = u.DVAId").
-	Where("u.Status=1 and a.Status !=-1").Count(&u)
+		Join("inner", []string{"Dealer_Vendor_user", "u"}, "a.DVAId = u.DVAId").
+		Join("inner", []string{"City", "c"}, "a.CityId = c.city_Id").
+		Join("inner", []string{"Province", "p"}, "c.pvc_Id = p.pvc_Id").
+		Where("u.Status=1 and a.Status !=-1").Count(&u)
 
 	if err != nil {
 		return 0, err
@@ -32,9 +34,15 @@ func GetUCarDealers(start, end int64) ([]model.DealerAccount, error) {
 		'' as PORT,'' as MAC_ADDRESS,a.Address as POSTAL_ADDRESS,a.Tel400 as CONTACTOR_TEL,a.CreateTime as BIRTHDAY,a.Pidname as COMPANY,
 		'' as SAFE_QUESTION,'' as SAFE_ANSWER,'01' as ACTIVITE_TYPE,'' as ACTIVITE_ACCOUNT,u.Password as PASSWORD,'' as IMEI,'' as IMSI,
 		a.BaiduMap as BAIDUMAP,'' as LONGITUDE,'' as LATITUDE,a.Address as SITE_ADDRESS,'' as ORIGIN_PLACE,'' as OFTEN_ADDRESS,
-		a.DVAId as SHOP_ID,isnull(a.SiteDisplayName,a.ShortName) as SHOP_NAME,'' as DATA_LAND
+		a.DVAId as SHOP_ID,isnull(a.SiteDisplayName,a.ShortName) as SHOP_NAME,'' as DATA_LAND,
+		c.city_Name as DVR_CITY, '中国' as DVR_COUNTRY,c.city_Postcode as DVR_DEVISIONCODE,a.Address as DVR_ADRESSDETAIL,
+		a.PostCode as DVR_POSTCODE,a.FullName as DVR_NAME,'' as DVR_ID,u.Mobile as DVR_MOBILE,u.Tel DVR_TELEPHONE,p.pvc_Name as DVR_PROVINCE,
+		'' as DVR_AREA,'' as DVR_TOWN,'' as DVR_STATUS,'' as DVR_TOWN_NAME,'' as DVR_TOWN_CODE,'' as DEFAULTADDRESS,
+		a.CreateTime as DVR_CAPTURETIME,a.LastModifyTime as DVR_UPDATETIME
 		 from Dealer_Vendor_user u
 		 join Dealer_Vendor_Account a on a.DVAId = u.DVAId
+		 join City c on a.CityId=c.city_Id
+		 join Province p on c.pvc_Id = p.pvc_Id
 		where u.Status=1 and a.Status !=-1`
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 
@@ -54,7 +62,7 @@ func CountCollection() (int64, error) {
 
 func GetCollections(start, end int64) ([]model.Collection, error) {
 	var entities []model.Collection
-	all := `select ROW_NUMBER() over(order by c.[CreateTime] desc) as row,
+	all := `select ROW_NUMBER() over(order by c.CreateTime desc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,c.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -69,7 +77,6 @@ func GetCollections(start, end int64) ([]model.Collection, error) {
 	return entities, err
 }
 
-
 // 关注
 func CountSubscribe() (int64, error) {
 	var u model.Subscribe
@@ -82,7 +89,7 @@ func CountSubscribe() (int64, error) {
 
 func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
 	var entities []model.Subscribe
-	all := `select ROW_NUMBER() over(order by [CreateTime] desc) as row,
+	all := `select ROW_NUMBER() over(order by CreateTime desc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -91,6 +98,74 @@ func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
 		(select count(1) from M_Subscribe  where Status=1 and phone=m.Phone group by Phone ) as SUB_NUM,
 		'' as FILE_SIZE,'' as MAINFILE
 		from M_Subscribe as m  where Status=1 and phone is not null`
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
+	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	return entities, err
+}
+
+// 评估
+func CountUcar() (int64, error) {
+	var u model.UcarBaseInfo
+	total, err := ucar_engine.SQL(`select count(1) from UcarBasicInfo b
+		join v_allcarbasic as p on b.CarID=p.Car_Id
+		join City c on  b.CarCityId =c.city_Id
+		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
+		join Dealer_Vendor_user as u on a.DVAId = u.DVAId
+		 where b.CarPublishTime > '2016-06-01'  and b.Destroy=0 and b.UcarStatus > 0`).Count(&u)
+
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
+	var entities []model.UcarBaseInfo
+	all := `select ROW_NUMBER() over(order by b.CreateTime desc) as row,
+		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,b.CreateTime as CAPTURE_TIME,'' as IMSI,
+		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+		a.DVAId as ACCOUNT_ID, u.UserName as REG_ACCOUNT, u.Mobile as BINDING_PHONE,
+		p.cb_Name + p.cs_Name + p.Car_Name as USED_CAR_NAME, b.DisplayPrice as USED_CAR_PRICE, '' as USED_CAR_URL,
+		b.UcarID as USED_CAR_ID, p.cb_Name CAR_BRAND, b.CarType as CAR_TYPE, b.BuyCarDate as CARD_TIME,
+		c.city_Name as SALE_CITY, b.DrivingMileage as MILEAGE, '' as VEHICLE_CONDITION, '' as LICENSE_PLATE_SITE
+		from UcarBasicInfo as b
+		join v_allcarbasic as p on b.CarID=p.Car_Id
+		join City c on b.CarCityId =c.city_Id
+		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
+		join Dealer_Vendor_user as u on a.DVAId = u.DVAId
+		where b.CarPublishTime > '2016-06-01'  and b.Destroy=0 and b.UcarStatus > 0 and a.Status !=-1  `
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
+	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	return entities, err
+}
+
+// 评估
+func CountEvaluate() (int64, error) {
+	var u model.EvaluateUcar
+	total, err := ucar_engine.Table("evaluateUcarBasicInfo").Alias("e").
+		Join("inner",[]string{"evaluateRecord","r"},"e.EvalCarID=r.EvalCarID").
+		Where("e.EcarStatus=1 and e.Active=1 and e.CreateTime > '2017-01-01'  and r.evaluateTime > '2017-01-01'").Count(&u)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func GetEvaluates(start, end int64) ([]model.EvaluateUcar, error) {
+	var entities []model.EvaluateUcar
+	all := `select ROW_NUMBER() over(order by e.CreateTime desc) as row,
+		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,e.CreateTime as CAPTURE_TIME,'' as IMSI,
+		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+		''as ACCOUNT_ID,'' as ACCOUNT,v.cb_Name as CAR_BRAND,'' as CAR_TYPE,e.BuyCarDate as CARD_TIME,
+		c.city_Name as SALE_CITY,e.DrivingMileage as MILEAGE,'' as VEHICLE_CONDITION,'' as LICENSE_PLATE_SITE,
+		r.evaluatePrice as USED_CAR_PRICE,'' as TRANSFER_NUMBER,'' as EXPECTED_SELLING_TIME
+		from evaluateUcarBasicInfo e
+		join v_allcarbasic v on e.CarID=v.Car_Id
+		join City c on e.EcarLocation=c.city_Id
+		join evaluateRecord r on e.EvalCarID=r.EvalCarID
+		where e.EcarStatus=1 and e.Active=1 and e.CreateTime > '2017-01-01'  and r.evaluateTime > '2017-01-01' `
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

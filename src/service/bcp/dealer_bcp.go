@@ -6,6 +6,7 @@ import (
 	"strings"
 	"os"
 	"../data"
+	"../tool"
 )
 
 type DealerBcp struct {
@@ -24,26 +25,34 @@ func (this *DealerBcp) WriteDealerBcp() (map[string]int64, error) {
 
 func writeDealerInfoToFile(start, end int64, bcpname string) {
 
-	var users []model.DealerAccount
-	users, err := data.GetUCarDealers(start, end)
+	var entities []model.DealerAccount
+	entities, err := data.GetUCarDealers(start, end)
 	if err != nil {
 		fmt.Println("获取全部商户异常：", err)
 		return
 	}
 	var content string
-	for _, user := range users {
-		if len(user.BAIDUMAP) > 0 {
-			ll := strings.Split(user.BAIDUMAP, ",")
+	for _, entity := range entities {
+		if len(entity.BAIDUMAP) > 0 {
+			ll := strings.Split(entity.BAIDUMAP, ",")
 			if len(ll) == 2 {
-				user.LONGITUDE, user.LATITUDE = ll[0], ll[1]
+				entity.LONGITUDE, entity.LATITUDE = ll[0], ll[1]
 			}
 		}
+		entity.REGIS_TIME = tool.HandTimeStr(entity.REGIS_TIME)
+		entity.IP_ADDRESS = tool.HandIP(entity.IP_ADDRESS)
+		entity.DVR_CAPTURETIME = tool.HandTimeStr(entity.DVR_CAPTURETIME)
+		entity.DVR_UPDATETIME = tool.HandTimeStr(entity.DVR_UPDATETIME)
 
-		line := strings.Join([]string{user.NAME, user.SEXCODE, user.CERTIFICATE_TYPE, user.CERTIFICATE_CODE, user.MOBILE, user.REG_ACCOUNT_TYPE, user.ACCOUNT_ID,
-			user.REG_ACCOUNT, user.REGIS_NICKNAME, user.REGIS_TIME, user.IP_ADDRESS, user.PORT, user.MAC_ADDRESS, user.POSTAL_ADDRESS,
-			user.CONTACTOR_TEL, user.BIRTHDAY, user.COMPANY, user.SAFE_QUESTION, user.SAFE_ANSWER, user.ACTIVITE_TYPE,
-			user.ACTIVITE_ACCOUNT, user.PASSWORD, user.IMEI, user.IMSI, user.LONGITUDE, user.LATITUDE, user.SITE_ADDRESS,
-			user.ORIGIN_PLACE, user.OFTEN_ADDRESS, user.SHOP_ID, user.SHOP_NAME, user.DATA_LAND}, "\t")
+		line := strings.Join([]string{entity.NAME, entity.SEXCODE, entity.CERTIFICATE_TYPE, entity.CERTIFICATE_CODE, entity.MOBILE, entity.REG_ACCOUNT_TYPE, entity.ACCOUNT_ID,
+			entity.REG_ACCOUNT, entity.REGIS_NICKNAME, entity.REGIS_TIME, entity.IP_ADDRESS, entity.PORT, entity.MAC_ADDRESS, entity.POSTAL_ADDRESS,
+			entity.CONTACTOR_TEL, entity.BIRTHDAY, entity.COMPANY, entity.SAFE_QUESTION, entity.SAFE_ANSWER, entity.ACTIVITE_TYPE,
+			entity.ACTIVITE_ACCOUNT, entity.PASSWORD, entity.IMEI, entity.IMSI, entity.LONGITUDE, entity.LATITUDE, entity.SITE_ADDRESS,
+			entity.ORIGIN_PLACE, entity.OFTEN_ADDRESS, entity.SHOP_ID, entity.SHOP_NAME, entity.DATA_LAND, entity.DVR_CITY,
+			entity.DVR_COUNTRY, entity.DVR_DEVISIONCODE, entity.DVR_ADRESSDETAIL, entity.DVR_POSTCODE, entity.DVR_NAME,
+			entity.DVR_ID, entity.DVR_MOBILE, entity.DVR_TELEPHONE, entity.DVR_PROVINCE, entity.DVR_AREA, entity.DVR_TOWN,
+			entity.DVR_STATUS, entity.DVR_TOWN_NAME, entity.DVR_TOWN_CODE, entity.DEFAULTADDRESS, entity.DVR_CAPTURETIME,
+			entity.DVR_UPDATETIME}, "\t")
 
 		content += line + "\n"
 	}

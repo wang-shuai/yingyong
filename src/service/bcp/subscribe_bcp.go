@@ -6,6 +6,7 @@ import (
 	"strings"
 	"os"
 	"../data"
+	"../tool"
 )
 
 type SubscribeBcp struct {
@@ -32,6 +33,11 @@ func writeSubscribeInfoToFile(start, end int64, bcpname string) {
 	}
 	var content string
 	for _, subscribe := range subscribes {
+		subscribe.UPDATE_TIME = tool.HandTimeStr(subscribe.UPDATE_TIME)
+		subscribe.CAPTURE_TIME = tool.HandTimeStr(subscribe.CAPTURE_TIME)
+		subscribe.SRC_IP = tool.HandIP(subscribe.SRC_IP)
+		subscribe.DST_IP = tool.HandIP(subscribe.DST_IP)
+
 		line := strings.Join([]string{subscribe.SRC_IP,
 			subscribe.DST_IP,
 			subscribe.SRC_PORT,
@@ -54,7 +60,7 @@ func writeSubscribeInfoToFile(start, end int64, bcpname string) {
 			subscribe.A_IDEN_STRING,
 			subscribe.A_PHONE,
 			subscribe.ACTION_TYPE,
-			subscribe.UPDATE_time,
+			subscribe.UPDATE_TIME,
 			subscribe.B_IDEN_ID,
 			subscribe.SUB_NAME,
 			subscribe.SUB_ID,

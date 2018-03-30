@@ -1,125 +1,157 @@
 {
-    "struct":[
+  "struct": [
     {
-        "name":"NAME",
-        "desc":"用户姓名"
+      "name": "NAME",
+      "desc": "用户姓名"
     },
     {
-        "name":"SEXCODE",
-        "desc":"性别"
+      "name": "SEXCODE",
+      "desc": "性别"
     },
     {
-        "name":"CERTIFICATE_TYPE",
-        "desc":"证件类型"
+      "name": "CERTIFICATE_TYPE",
+      "desc": "证件类型"
     },
     {
-        "name":"CERTIFICATE_CODE",
-        "desc":"证件号码"
+      "name": "CERTIFICATE_CODE",
+      "desc": "证件号码"
     },
     {
-        "name":"MOBILE",
-        "desc":"手机号码"
+      "name": "MOBILE",
+      "desc": "手机号码"
     },
     {
-        "name":"REG_ACCOUNT_TYPE",
-        "desc":"网络应用代码"
+      "name": "REG_ACCOUNT_TYPE",
+      "desc": "网络应用代码"
     },
     {
-        "name":"ACCOUNT_ID",
-        "desc":"用户ID"
+      "name": "ACCOUNT_ID",
+      "desc": "用户ID"
     },
     {
-        "name":"REG_ACCOUNT",
-        "desc":"注册帐号"
+      "name": "REG_ACCOUNT",
+      "desc": "注册帐号"
     },
     {
-        "name":"REGIS_NICKNAME",
-        "desc":"注册昵称"
+      "name": "REGIS_NICKNAME",
+      "desc": "注册昵称"
     },
     {
-        "name":"REGIS_TIME",
-        "desc":"注册时间"
+      "name": "REGIS_TIME",
+      "desc": "注册时间"
     },
     {
-        "name":"IP_ADDRESS",
-        "desc":"注册IP地址"
+      "name": "IP_ADDRESS",
+      "desc": "注册IP地址"
     },
     {
-        "name":"PORT",
-        "desc":"注册端口"
+      "name": "PORT",
+      "desc": "注册端口"
     },
     {
-        "name":"MAC_ADDRESS",
-        "desc":"注册MAC地址"
+      "name": "MAC_ADDRESS",
+      "desc": "注册MAC地址"
     },
     {
-        "name":"POSTAL_ADDRESS",
-        "desc":"联系地址"
+      "name": "POSTAL_ADDRESS",
+      "desc": "联系地址"
     },
     {
-        "name":"CONTACTOR_TEL",
-        "desc":"联系电话"
+      "name": "CONTACTOR_TEL",
+      "desc": "联系电话"
     },
     {
-        "name":"BIRTHDAY",
-        "desc":"出生日期"
+      "name": "BIRTHDAY",
+      "desc": "出生日期"
     },
     {
-        "name":"COMPANY",
-        "desc":"公司名"
+      "name": "COMPANY",
+      "desc": "公司名"
     },
     {
-        "name":"SAFE_QUESTION",
-        "desc":"安全问题"
+      "name": "SAFE_QUESTION",
+      "desc": "安全问题"
     },
     {
-        "name":"SAFE_ANSWER",
-        "desc":"安全问题答案"
+      "name": "SAFE_ANSWER",
+      "desc": "安全问题答案"
     },
     {
-        "name":"ACTIVITE_TYPE",
-        "desc":"激活类型"
+      "name": "ACTIVITE_TYPE",
+      "desc": "激活类型"
     },
     {
-        "name":"ACTIVITE_ACCOUNT",
-        "desc":"激活用帐号"
+      "name": "ACTIVITE_ACCOUNT",
+      "desc": "激活用帐号"
     },
     {
-        "name":"PASSWORD",
-        "desc":"密码"
+      "name": "PASSWORD",
+      "desc": "密码"
     },
     {
-        "name":"IMEI",
-        "desc":"注册IMEI"
+      "name": "IMEI",
+      "desc": "注册IMEI"
     },
     {
-        "name":"IMSI",
-        "desc":"注册IMSI"
+      "name": "IMSI",
+      "desc": "注册IMSI"
     },
     {
-        "name":"LONGITUDE",
-        "desc":"注册经度"
+      "name": "LONGITUDE",
+      "desc": "注册经度"
     },
     {
-        "name":"LATITUDE",
-        "desc":"注册纬度"
+      "name": "LATITUDE",
+      "desc": "注册纬度"
     },
     {
-        "name":"SITE_ADDRESS",
-        "desc":"注册地址"
+      "name": "SITE_ADDRESS",
+      "desc": "注册地址"
     },
     {
-        "name":"ORIGIN_PLACE",
-        "desc":"籍贯"
+      "name": "ORIGIN_PLACE",
+      "desc": "籍贯"
     },
     {
-        "name":"OFTEN_ADDRESS",
-        "desc":"居住地"
+      "name": "OFTEN_ADDRESS",
+      "desc": "居住地"
     },
     {
-        "name":"DATA_LAND",
-        "desc":"数据产生时的行政区划"
-    }        
-    ]
+      "name": "DATA_LAND",
+      "desc": "数据产生时的行政区划"
+    },
+    {
+      "name": "ACCOUNT_ACTION_TYPE",
+      "desc": "动作类型"
+    },
+    {
+      "name": "USER_PHOTO",
+      "desc": "用户头像"
+    },
+    {
+      "name": "HARDWARESTRING_TYPE",
+      "desc": "应用硬件特征串类型"
+    },
+    {
+      "name": "HARDWARESTRING",
+      "desc": "应用硬件特征串"
+    },
+    {
+      "name": "JOIN_ACCOUNT_TYPE",
+      "desc": "合作账号类型"
+    },
+    {
+      "name": "IDEN_TYPE",
+      "desc": "实名认证方式"
+    },
+    {
+      "name": "IDENTIFICATION_TYPE",
+      "desc": "实名认证身份类型"
+    },
+    {
+      "name": "IDENTIFICATION_ID",
+      "desc": "实名认证身份ID"
+    }
+  ]
 }
 

@@ -96,18 +96,17 @@ func getTemplateIdx(code string) (*etree.Document, *etree.Element) {
 
 func buildFileRef(dt *etree.Element, code string, filelist map[string]int64) {
 	ds := dt.CreateElement("DATASET")
-	ds.CreateAttr("name", code)
+	ds.CreateAttr("name", "WA_COMMON_010014")
 	ds.CreateAttr("rmk", "BCP数据文件信息")
 
 	// 循环 添加文件目录
-
-	data := ds.CreateElement("DATA")
-	item := data.CreateElement("ITEM")
-	item.CreateAttr("key", "TRANSFILE")
-	item.CreateAttr("val", code)
-	item.CreateAttr("rmk", "文件路径")
-
 	for filename, cnt := range filelist {
+		data := ds.CreateElement("DATA")
+		item := data.CreateElement("ITEM")
+		item.CreateAttr("key", "TRANSFILE")
+		item.CreateAttr("val", code)
+		item.CreateAttr("rmk", "文件路径")
+
 		item = data.CreateElement("ITEM")
 		item.CreateAttr("key", "FILE_NAME")
 		item.CreateAttr("val", filename)
@@ -122,7 +121,7 @@ func buildFileRef(dt *etree.Element, code string, filelist map[string]int64) {
 
 func buildBcpDataStructure(dt *etree.Element, code, idxjsonpath string) {
 	ds := dt.CreateElement("DATASET")
-	ds.CreateAttr("name", code)
+	ds.CreateAttr("name", "WA_COMMON_010015")
 	ds.CreateAttr("rmk", "BCP文件数据结构")
 	data := ds.CreateElement("DATA")
 
