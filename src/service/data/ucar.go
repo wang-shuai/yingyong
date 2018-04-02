@@ -6,8 +6,8 @@ import (
 )
 
 // 注册商户
-func CountUCarDealer() (int64, error) {
-	var u model.DealerAccount
+func CountUCarDealerUser() (int64, error) {
+	var u model.DealerUser
 
 	// 应该是一样的
 	//total, err := ucar_engine.SQL(`select u.* from Dealer_Vendor_user u
@@ -25,8 +25,8 @@ func CountUCarDealer() (int64, error) {
 	return total, nil
 }
 
-func GetUCarDealers(start, end int64) ([]model.DealerAccount, error) {
-	var entities []model.DealerAccount
+func GetUCarDealerUsers(start, end int64) ([]model.DealerUser, error) {
+	var entities []model.DealerUser
 	// 要排序的所有数据
 	all := `select ROW_NUMBER() over(order by a.CreateTime desc) as row,
 		a.FullName as NAME,'0' as SEXCODE,'' as CERTIFICATE_TYPE,'' as CERTIFICATE_CODE,u.Mobile as MOBILE,'1430015' as REG_ACCOUNT_TYPE,
@@ -110,12 +110,12 @@ func CountUcar() (int64, error) {
 		join v_allcarbasic as p on b.CarID=p.Car_Id
 		join City c on  b.CarCityId =c.city_Id
 		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
-		join Dealer_Vendor_user as u on a.DVAId = u.DVAId
-		 where b.CarPublishTime > '2016-06-01'  and b.Destroy=0 and b.UcarStatus > 0`).Count(&u)
+		 where b.CarPublishTime > '2017-01-01'  and b.Destroy=0 and b.UcarStatus > 0`).Count(&u)
 
 	if err != nil {
 		return 0, err
 	}
+	//fmt.Println(total)
 	return total, nil
 }
 
@@ -125,7 +125,7 @@ func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,b.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
-		a.DVAId as ACCOUNT_ID, u.UserName as REG_ACCOUNT, u.Mobile as BINDING_PHONE,
+		a.DVAId as ACCOUNT_ID, CONVERT(varchar, a.EPId ) +'@tc'  as REG_ACCOUNT, isnull(a.Tel400,a.CompanyPhone) as BINDING_PHONE,
 		p.cb_Name + p.cs_Name + p.Car_Name as USED_CAR_NAME, b.DisplayPrice as USED_CAR_PRICE, '' as USED_CAR_URL,
 		b.UcarID as USED_CAR_ID, p.cb_Name CAR_BRAND, b.CarType as CAR_TYPE, b.BuyCarDate as CARD_TIME,
 		c.city_Name as SALE_CITY, b.DrivingMileage as MILEAGE, '' as VEHICLE_CONDITION, '' as LICENSE_PLATE_SITE
@@ -133,8 +133,7 @@ func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
 		join v_allcarbasic as p on b.CarID=p.Car_Id
 		join City c on b.CarCityId =c.city_Id
 		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
-		join Dealer_Vendor_user as u on a.DVAId = u.DVAId
-		where b.CarPublishTime > '2016-06-01'  and b.Destroy=0 and b.UcarStatus > 0 and a.Status !=-1  `
+		where b.CarPublishTime > '2017-01-01'  and b.Destroy=0 and b.UcarStatus > 0 and a.Status !=-1 `
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -166,6 +165,33 @@ func GetEvaluates(start, end int64) ([]model.EvaluateUcar, error) {
 		join City c on e.EcarLocation=c.city_Id
 		join evaluateRecord r on e.EvalCarID=r.EvalCarID
 		where e.EcarStatus=1 and e.Active=1 and e.CreateTime > '2017-01-01'  and r.evaluateTime > '2017-01-01' `
+	sql := `select t.* from (%s) as t where t.row between %d and %d`
+	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
+	return entities, err
+}
+
+
+// 评估
+func CountDealers() (int64, error) {
+	var u model.Dealer
+	total, err := ucar_engine.Table("Dealer_Vendor_Account").
+		Where("EPId>0 and Status!=-1").Count(&u)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func GetDealers(start, end int64) ([]model.Dealer, error) {
+	var entities []model.Dealer
+	all := `select ROW_NUMBER() over(order by CreateTime desc) as row,
+		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC, CreateTime as CAPTURE_TIME,'' as IMSI,
+		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
+		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
+		dvaid as ACCOUNT_ID, CONVERT(varchar, EPId ) +'@tc' as  ACCOUNT, ShortName as	PRINCIPAL_NAME,
+ 		isnull(Tel400,CompanyPhone) as  BINDING_PHONE,  FullName as COMPANY_NAME,  type as DEALER_TYPE,
+  		Address as DEALER_ADDRESS
+		from Dealer_Vendor_Account where EPId>0 and Status!=-1 `
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

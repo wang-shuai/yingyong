@@ -1,7 +1,7 @@
 package model
 
 // 商家
-type DealerAccount struct {
+type DealerUser struct {
 	NAME                string //用户姓名
 	SEXCODE             string //性别
 	CERTIFICATE_TYPE    string //证件类型

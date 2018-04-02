@@ -22,10 +22,14 @@ func(this * FtpOperation) FtpUploadFile(ftpserver, ftpuser, pw, localFile, remot
 	//dir, err := ftpSvrConn.CurrentDir()
 	//fmt.Println(dir)
 
-	err = ftpSvrConn.MakeDir(remoteSavePath)
-	if err!=nil{
-		fmt.Println("创建远程ftp目录失败：",err)
+	// 如果有 则直接转过去 否则就是没有目录，则创建
+	if err = ftpSvrConn.ChangeDir(remoteSavePath);err!=nil{
+		err = ftpSvrConn.MakeDir(remoteSavePath)
+		if err!=nil{
+			fmt.Println("创建远程ftp目录失败：",err)
+		}
 	}
+
 	ftpSvrConn.ChangeDir(remoteSavePath)
 	dir, _ := ftpSvrConn.CurrentDir()
 	fmt.Println(dir)

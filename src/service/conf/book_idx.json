@@ -19,11 +19,18 @@
     {"name":"APPLICATION_TYPE","desc":"网络应用代码"},
     {"name":"ACCOUNT_ID","desc":"用户ID"},
     {"name":"ACCOUNT","desc":"用户账号"},
-    {"name":"PRINCIPAL_NAME","desc":"负责人姓名"},
     {"name":"BINDING_PHONE","desc":"绑定手机号码"},
-    {"name":"COMPANY_NAME","desc":"公司名称"},
-    {"name":"DEALER_TYPE","desc":"经销商类型"},
-    {"name":"DEALER_ADDRESS","desc":"经销商地址"}
+    {"name":"SELLER_PHONE","desc":"卖方手机号"},
+    {"name":"USED_CAR_NAME","desc":"二手车名称"},
+    {"name":"USED_CAR_PRICE","desc":"二手车价格"},
+    {"name":"USED_CAR_URL","desc":"二手车链接"},
+    {"name":"CAR_BRAND","desc":"品牌"},
+    {"name":"CAR_TYPE","desc":"车型"},
+    {"name":"CARD_TIME","desc":"上牌时间"},
+    {"name":"SALE_CITY","desc":"出售城市"},
+    {"name":"MILEAGE","desc":"行驶里程"},
+    {"name":"VEHICLE_CONDITION","desc":"车况"},
+    {"name":"LICENSE_PLATE_SITE","desc":"牌照地"}
   ]
 }
 

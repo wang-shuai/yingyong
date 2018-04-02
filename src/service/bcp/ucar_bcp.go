@@ -16,7 +16,7 @@ func (this *UcarBcp) WriteUcarBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountUcar()
 	if err != nil {
-		fmt.Println("获取车辆评估总条数错误：", err)
+		fmt.Println("获取车辆发布总条数错误：", err)
 		return nil, err
 	}
 	return writeBcp(cnt, model.UcarDir, model.UcarCode, getUcarFileContent)
