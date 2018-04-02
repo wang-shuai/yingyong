@@ -13,6 +13,8 @@ var (
 	newcar_engine *xorm.Engine //新车数据库操作
 	ucar_engine   *xorm.Engine // ucar数据库
 	uleads_engine *xorm.Engine // ucarleads数据库
+
+	startdate string //取数据的起始时间
 )
 
 func init() {
@@ -20,6 +22,8 @@ func init() {
 		fmt.Println("recover")
 		recover()
 	}()
+
+	startdate ,_ = model.Cfg.String("startdate")
 
 	schema_n, _ := model.Cfg.String("db.newcar.schema")
 	connStr_n, _ := model.Cfg.String("db.newcar.connectionString")

@@ -42,7 +42,7 @@ func CountLoanOrder() (int64, error) {
 	total, err := newcar_engine.Table("LoanOrder").Alias("o").
 		Join("inner",[]string{"LoanUserProfile","u"},"o.userid = u.LoanUserID and u.IsDeleted=0").
 		Join("inner",[]string{"LoanOrder_Middle","m"},"o.OrderID=m.LoanOrderID and m.IsDeleted=0").
-		Where(`o.IsDeleted=0  and o.CreateTime > '2017-01-01'`).Count(&u)
+		Where(fmt.Sprintf(`o.IsDeleted=0  and o.CreateTime > '%s'`,startdate)).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -52,7 +52,7 @@ func CountLoanOrder() (int64, error) {
 func GetLoanOrders(start, end int64) ([]model.LoanOrder, error) {
 	var entities []model.LoanOrder
 	// 要排序的所有数据
-	all := `select ROW_NUMBER() over(order by u.CreateTime desc) as row,
+	all := fmt.Sprintf( `select ROW_NUMBER() over(order by u.CreateTime desc) as row,
 		o.IP as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,o.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -65,7 +65,7 @@ func GetLoanOrders(start, end int64) ([]model.LoanOrder, error) {
 		join Region r on o.CityID = r.ID and r.Level=2
 		join LoanOrder_Middle m on o.OrderID=m.LoanOrderID and m.IsDeleted=0
 		join ViewLevelCar v on o.CarId = v.Car_Id
-		where o.IsDeleted=0  and o.CreateTime > '2017-01-01'`
+		where o.IsDeleted=0  and o.CreateTime > '%s'`,startdate)
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

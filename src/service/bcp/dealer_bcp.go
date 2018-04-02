@@ -80,7 +80,6 @@ func getDealerFileContent(start, end int64) string {
 
 		content += line + "\n"
 	}
-	fmt.Printf("%d - %d = %d  len=%d \n",end , start,end-start,len(entities))
 
 	return content
 }
