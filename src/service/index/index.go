@@ -3,7 +3,7 @@ package index
 import (
 	"strconv"
 	"github.com/beevik/etree"
-	"../model"
+	"golang-services/jingyong/model"
 	"fmt"
 	"github.com/olebedev/config"
 )

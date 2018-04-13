@@ -1,14 +1,15 @@
 package bcp
 
 import (
-	"../model"
+	"golang-services/jingyong/model"
 	"fmt"
 	"strings"
-	"../data"
-	"../tool"
+	"golang-services/jingyong/data"
+	"golang-services/jingyong/tool"
 
 	"github.com/garyburd/redigo/redis"
 	"encoding/json"
+	"gitlab.dev.daikuan.com/platform/golang-services/push-cities-to-redis/flog"
 )
 
 type BookBcp struct {
@@ -19,7 +20,7 @@ func (this *BookBcp) WriteBookBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountBooks()
 	if err != nil {
-		fmt.Println("获取车辆评估总条数错误：", err)
+		flog.Errorf("获取预约记录总条数错误：%v \n", err)
 		return nil, err
 	}
 	return writeBcp(cnt, model.BookDir, model.BookCode, getBookFileContent)
@@ -30,7 +31,7 @@ func getBookFileContent(start, end int64) string {
 	var entities []model.Book
 	entities, err := data.GetBooks(start, end)
 	if err != nil {
-		fmt.Println("获取全部车辆评估异常：", err)
+		flog.Errorf("获取全部预约记录异常：%v \n", err)
 		return ``
 	}
 	var content string
@@ -41,43 +42,62 @@ func getBookFileContent(start, end int64) string {
 		turn += 1
 	}
 
+	datamap := make(map[string]model.Entity_Cacheucarbasicinfo_Full)
 	keyfmt := "BitAuto.Taoche.CarSource_FullDetail_UCarId_%d"
 	for i := 0; i < turn; i++ {
 		rediskeys := make([]interface{}, 0)
-
-		//datamap := make(map[int]model.Entity_Cacheucarbasicinfo_Full)
 
 		for s := 100 * i; s < 100*(i+1) && s < cnt; s++ {
 			book := entities[s]
 			rediskeys = append(rediskeys, fmt.Sprintf(keyfmt, book.AimUcarId))
 		}
-		books := make([]model.Entity_Cacheucarbasicinfo_Full, len(rediskeys))
+
+		//books := make([]model.Entity_Cacheucarbasicinfo_Full, len(rediskeys))
 
 		conn := model.Pool.Get()
 
 		replys, err := redis.Values(conn.Do("MGET", rediskeys...))
 		if err != nil {
-			fmt.Println("获取多个redis值出错：", err)
+			flog.Errorf("获取多个redis值出错：%v \n", err)
 			continue
 		}
 
-		jsondata, err := json.Marshal(replys)
-		if err == nil && len(jsondata) > 0 {
-			fmt.Println(jsondata)
-		} else {
-			continue
+		var item model.Entity_Cacheucarbasicinfo_Full
+		for i, r := range replys {
+			if bt, ok := r.([]byte); ok {
+				json.Unmarshal(bt, &item)
+				fmt.Println(i, "条目：", item)
+				//books = append(books,item)
+				datamap[item.UcarID] = item
+			}
 		}
-		json.Unmarshal(jsondata, books)
 
-		fmt.Println(books)
+		flog.Errorf("缓存字典：%v \n",datamap)
 	}
 
-	for _, entity := range entities {
+	for i := range entities {
+		entity := entities[i]
+		if cbase, exist := datamap[entity.AimUcarId]; exist {
+			entity.SRC_IP = tool.HandIP(entity.SRC_IP)
+			entity.DST_IP = tool.HandIP(entity.DST_IP)
+			entity.CAPTURE_TIME = tool.HandTimeStr(entity.CAPTURE_TIME)
+			entity.CARD_TIME = tool.HandTimeStr(entity.CARD_TIME)
+			entity.USED_CAR_URL = fmt.Sprintf("http://www.taoche.com/buycar/p-%s.html", entity.AimUcarId)
+			//entity.ACCOUNT = cbase.UserID
+			entity.ACCOUNT_ID = cbase.RegUserId
+			entity.BINDING_PHONE = cbase.Tell
 
-		entity.SRC_IP = tool.HandIP(entity.SRC_IP)
-		entity.DST_IP = tool.HandIP(entity.DST_IP)
-		entity.CAPTURE_TIME = tool.HandTimeStr(entity.CAPTURE_TIME)
-		entity.CARD_TIME = tool.HandTimeStr(entity.CARD_TIME)
+			entity.SELLER_PHONE = cbase.Tell2
+			entity.USED_CAR_NAME = cbase.Serial_ShowName
+			entity.USED_CAR_PRICE = cbase.DisplayPrice
+			entity.CAR_BRAND = cbase.MBrand_Name
+			entity.CAR_TYPE = cbase.CarType
+
+			//entity.SALE_CITY   //sql 已赋值
+			entity.MILEAGE = cbase.DrivingMileage
+			entity.VEHICLE_CONDITION = ``
+			entity.LICENSE_PLATE_SITE = cbase.LicenseCityId
+		}
 
 		line := strings.Join([]string{entity.SRC_IP,
 			entity.DST_IP,
@@ -98,6 +118,11 @@ func getBookFileContent(start, end int64) string {
 			entity.APPLICATION_TYPE,
 			entity.ACCOUNT_ID,
 			entity.ACCOUNT,
+			entity.BINDING_PHONE,
+			entity.SELLER_PHONE,
+			entity.USED_CAR_NAME,
+			entity.USED_CAR_PRICE,
+			entity.USED_CAR_URL,
 			entity.CAR_BRAND,
 			entity.CAR_TYPE,
 			entity.CARD_TIME,
@@ -105,14 +130,10 @@ func getBookFileContent(start, end int64) string {
 			entity.MILEAGE,
 			entity.VEHICLE_CONDITION,
 			entity.LICENSE_PLATE_SITE,
-			entity.USED_CAR_PRICE,
-			//entity.TRANSFER_NUMBER,
-			//entity.EXPECTED_SELLING_TIME
-		},
-			"\t")
+		}, "\t")
 
 		content += line + "\n"
 	}
-	//fmt.Println(content)
+	//flog.Errorf(content)
 	return content
 }

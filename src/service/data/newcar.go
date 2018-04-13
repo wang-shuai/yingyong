@@ -2,15 +2,21 @@ package data
 
 import (
 	"fmt"
-	"../model"
+	"golang-services/jingyong/model"
 )
 
 // 注册用户
 func CountAllUserInfos() (int64, error) {
 	var u model.User
+
+	w := fmt.Sprintf("u.IsDeleted=0 and p.IsDeleted=0 and u.CreateTime > '%s'",startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, u.CreateTime,GetDate())=1"
+	}
+
 	total, err := newcar_engine.Table("LoanUser").
-	Alias("u").Join("left",[]string{"LoanUserProfile","p"},"u.id = p.loanuserid").
-	Where("u.IsDeleted=0 and p.IsDeleted=0").Count(&u)
+		Alias("u").Join("left", []string{"LoanUserProfile", "p"}, "u.id = p.loanuserid").
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -20,7 +26,7 @@ func CountAllUserInfos() (int64, error) {
 func GetAllUserInfos(start, end int64) ([]model.User, error) {
 	var entities []model.User
 	// 要排序的所有数据
-	all := `select ROW_NUMBER() over(order by u.CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by u.ID asc) as row,
 	u.Name,isnull(u.Gender,'男') as SexCode,111 as Certificate_Type,p.CertificateNumber as Certificate_Code,u.Telphone as Mobile,'1430015' as Reg_Account_Type,
 	u.ID as Account_Id,u.Telphone as Reg_Account,p.NickName as Regis_NickName, u.CreateTime as Regis_Time, isnull(u.IP,'') as Ip_Address,''as Port,
 	'' as Mac_Address,p.Address as Postal_Address,u.Telphone as Contactor_Tel,p.Birthday as Birthday,'' as Company, '' as Safe_Question, '' as Safe_Answer,
@@ -30,7 +36,11 @@ func GetAllUserInfos(start, end int64) ([]model.User, error) {
 	'' as IDEN_TYPE,    '' as IDENTIFICATION_TYPE,	'' as IDENTIFICATION_ID
 	 from LoanUser as u
 	 left join LoanUserProfile p on u.id = p.loanuserid
-	 where u.IsDeleted=0 and p.IsDeleted=0`
+	 where u.IsDeleted=0 and p.IsDeleted=0 and u.CreateTime > '%s'`,startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, u.CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -39,10 +49,16 @@ func GetAllUserInfos(start, end int64) ([]model.User, error) {
 // 贷款购车
 func CountLoanOrder() (int64, error) {
 	var u model.LoanOrder
+
+	w := fmt.Sprintf(`o.IsDeleted=0  and o.CreateTime > '%s'`, startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, o.CreateTime,GetDate())=1"
+	}
+
 	total, err := newcar_engine.Table("LoanOrder").Alias("o").
-		Join("inner",[]string{"LoanUserProfile","u"},"o.userid = u.LoanUserID and u.IsDeleted=0").
-		Join("inner",[]string{"LoanOrder_Middle","m"},"o.OrderID=m.LoanOrderID and m.IsDeleted=0").
-		Where(fmt.Sprintf(`o.IsDeleted=0  and o.CreateTime > '%s'`,startdate)).Count(&u)
+		Join("inner", []string{"LoanUserProfile", "u"}, "o.userid = u.LoanUserID and u.IsDeleted=0").
+		Join("inner", []string{"LoanOrder_Middle", "m"}, "o.OrderID=m.LoanOrderID and m.IsDeleted=0").
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -52,7 +68,7 @@ func CountLoanOrder() (int64, error) {
 func GetLoanOrders(start, end int64) ([]model.LoanOrder, error) {
 	var entities []model.LoanOrder
 	// 要排序的所有数据
-	all := fmt.Sprintf( `select ROW_NUMBER() over(order by u.CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by o.Id asc) as row,
 		o.IP as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,o.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -65,7 +81,11 @@ func GetLoanOrders(start, end int64) ([]model.LoanOrder, error) {
 		join Region r on o.CityID = r.ID and r.Level=2
 		join LoanOrder_Middle m on o.OrderID=m.LoanOrderID and m.IsDeleted=0
 		join ViewLevelCar v on o.CarId = v.Car_Id
-		where o.IsDeleted=0  and o.CreateTime > '%s'`,startdate)
+		where o.IsDeleted=0  and o.CreateTime > '%s'`, startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, o.CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := newcar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

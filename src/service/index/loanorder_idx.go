@@ -1,7 +1,7 @@
 package index
 
 import (
-	"../model"
+	"golang-services/jingyong/model"
 )
 
 func (this *Index) BuildLoanOrderIdx(filelist map[string]int64) {

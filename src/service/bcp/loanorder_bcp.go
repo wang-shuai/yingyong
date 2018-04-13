@@ -1,11 +1,11 @@
 package bcp
 
 import (
-	"../model"
-	"fmt"
+	"golang-services/jingyong/model"
+	"gitlab.dev.daikuan.com/platform/golang-services/push-cities-to-redis/flog"
 	"strings"
-	"../data"
-	"../tool"
+	"golang-services/jingyong/data"
+	"golang-services/jingyong/tool"
 )
 
 type LoanOrderBcp struct {
@@ -16,7 +16,7 @@ func (this *LoanOrderBcp) WriteLoanOrderBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountLoanOrder()
 	if err != nil {
-		fmt.Println("获取用户总条数错误：", err)
+		flog.Errorf("获取用户总条数错误：%v \n", err)
 		return nil, err
 	}
 	return writeBcp(cnt, model.LoanOrderDir, model.LoanOrderCode, getLoanOrderFileContent)
@@ -27,7 +27,7 @@ func getLoanOrderFileContent(start, end int64) string {
 	var LoanOrders []model.LoanOrder
 	LoanOrders, err := data.GetLoanOrders(start, end)
 	if err != nil {
-		fmt.Println("获取全部用户异常：", err)
+		flog.Errorf("获取全部用户异常：%v \n", err)
 		return ``
 	}
 	var content string
@@ -77,6 +77,6 @@ func getLoanOrderFileContent(start, end int64) string {
 
 		content += line + "\n"
 	}
-	//fmt.Println(content)
+	//flog.Errorf(content)
 	return content
 }

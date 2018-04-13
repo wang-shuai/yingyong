@@ -1,11 +1,12 @@
 package bcp
 
 import (
-	"../model"
-	"fmt"
+	"golang-services/jingyong/model"
+	"gitlab.dev.daikuan.com/platform/golang-services/push-cities-to-redis/flog"
 	"strings"
-	"../data"
-	"../tool"
+	"golang-services/jingyong/data"
+	"golang-services/jingyong/tool"
+	"fmt"
 )
 
 type UcarBcp struct {
@@ -16,7 +17,7 @@ func (this *UcarBcp) WriteUcarBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountUcar()
 	if err != nil {
-		fmt.Println("获取车辆发布总条数错误：", err)
+		flog.Errorf("获取车辆发布总条数错误：%v \n", err)
 		return nil, err
 	}
 	return writeBcp(cnt, model.UcarDir, model.UcarCode, getUcarFileContent)
@@ -27,7 +28,7 @@ func getUcarFileContent(start, end int64) string {
 	var entities []model.UcarBaseInfo
 	entities, err := data.GetUcars(start, end)
 	if err != nil {
-		fmt.Println("获取全部车源异常：", err)
+		flog.Errorf("获取全部车源异常：%v \n", err)
 		return ``
 	}
 	var content string

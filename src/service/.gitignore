@@ -6,5 +6,5 @@
 beego.iml
 output
 tempdata
-/.idea
 /.vscode
+log

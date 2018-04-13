@@ -1,7 +1,7 @@
 package data
 
 import (
-	"../model"
+	"golang-services/jingyong/model"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/go-xorm/core"
@@ -15,6 +15,7 @@ var (
 	uleads_engine *xorm.Engine // ucarleads数据库
 
 	startdate string //取数据的起始时间
+	isalldata bool //是否取全量部署
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 	}()
 
 	startdate ,_ = model.Cfg.String("startdate")
+	isalldata ,_ = model.Cfg.Bool("isalldata")
 
 	schema_n, _ := model.Cfg.String("db.newcar.schema")
 	connStr_n, _ := model.Cfg.String("db.newcar.connectionString")

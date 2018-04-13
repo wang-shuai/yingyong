@@ -2,12 +2,17 @@ package data
 
 import (
 	"fmt"
-	"../model"
+	"golang-services/jingyong/model"
 )
 
 // 注册商户
 func CountUCarDealerUser() (int64, error) {
 	var u model.DealerUser
+
+	w := fmt.Sprintf(`u.Status=1 and a.Status !=-1 and a.CreateTime > '%s'`,startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, a.CreateTime,GetDate())=1"
+	}
 
 	// 应该是一样的
 	//total, err := ucar_engine.SQL(`select u.* from Dealer_Vendor_user u
@@ -17,7 +22,7 @@ func CountUCarDealerUser() (int64, error) {
 		Join("inner", []string{"Dealer_Vendor_user", "u"}, "a.DVAId = u.DVAId").
 		Join("inner", []string{"City", "c"}, "a.CityId = c.city_Id").
 		Join("inner", []string{"Province", "p"}, "c.pvc_Id = p.pvc_Id").
-		Where(fmt.Sprintf(`u.Status=1 and a.Status !=-1 and a.CreateTime > '%s'`,startdate)).Count(&u)
+		Where(w).Count(&u)
 
 	if err != nil {
 		return 0, err
@@ -44,6 +49,10 @@ func GetUCarDealerUsers(start, end int64) ([]model.DealerUser, error) {
 		 join City c on a.CityId=c.city_Id
 		 join Province p on c.pvc_Id = p.pvc_Id
 		where u.Status=1 and a.Status !=-1 and a.CreateTime > '%s'`,startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, a.CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
@@ -53,8 +62,14 @@ func GetUCarDealerUsers(start, end int64) ([]model.DealerUser, error) {
 // 收藏
 func CountCollection() (int64, error) {
 	var u model.Collection
+
+	w := fmt.Sprintf(`Status=1 and type =1 and CreateTime > '%s'`, startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, CreateTime,GetDate())=1"
+	}
+
 	total, err := ucar_engine.Table("Iucar_Collection").
-		Where(fmt.Sprintf(`Status=1 and type =1 and CreateTime > '%s'`, startdate)).Count(&u)
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -74,6 +89,9 @@ func GetCollections(start, end int64) ([]model.Collection, error) {
 		from Iucar_Collection  c
 		left join ucarbasicinfo b on c.InfoID=b.UcarID
 		where c.Status=1 and c.type =1 and c.CreateTime > '%s'`, startdate)
+	if !isalldata {
+		all = all + " and DATEDIFF(d, c.CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -82,8 +100,13 @@ func GetCollections(start, end int64) ([]model.Collection, error) {
 // 关注
 func CountSubscribe() (int64, error) {
 	var u model.Subscribe
+
+	w := fmt.Sprintf(`Status=1 and phone is not null and CreateTime > '%s'`, startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, CreateTime,GetDate())=1"
+	}
 	total, err := ucar_engine.Table("M_Subscribe").
-		Where(fmt.Sprintf(`Status=1 and phone is not null and CreateTime > '%s'`, startdate)).Count(&u)
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -92,7 +115,7 @@ func CountSubscribe() (int64, error) {
 
 func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
 	var entities []model.Subscribe
-	all := fmt.Sprintf(`select ROW_NUMBER() over(order by CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by KeyId asc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -101,6 +124,9 @@ func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
 		(select count(1) from M_Subscribe  where Status=1 and phone=m.Phone group by Phone ) as SUB_NUM,
 		'' as FILE_SIZE,'' as MAINFILE
 		from M_Subscribe as m  where Status=1 and phone is not null and CreateTime > '%s'`, startdate)
+	if !isalldata {
+		all = all + " and DATEDIFF(d, CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -109,11 +135,16 @@ func GetSubscribes(start, end int64) ([]model.Subscribe, error) {
 // 评估
 func CountUcar() (int64, error) {
 	var u model.UcarBaseInfo
-	total, err := ucar_engine.SQL(fmt.Sprintf(`select count(1) from UcarBasicInfo b
+
+	sql := fmt.Sprintf(`select count(1) from UcarBasicInfo b
 		join v_allcarbasic as p on b.CarID=p.Car_Id
 		join City c on  b.CarCityId =c.city_Id
 		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
-		 where b.CarPublishTime > '%s'  and b.Destroy=0 and b.UcarStatus > 0`,startdate)).Count(&u)
+		 where b.CarPublishTime > '%s'  and b.Destroy=0 and b.UcarStatus > 0`,startdate)
+	if !isalldata {
+		sql = sql + " and DATEDIFF(d, b.CarPublishTime,GetDate())=1"
+	}
+	total, err := ucar_engine.SQL(sql).Count(&u)
 
 	if err != nil {
 		return 0, err
@@ -124,7 +155,7 @@ func CountUcar() (int64, error) {
 
 func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
 	var entities []model.UcarBaseInfo
-	all := fmt.Sprintf(`select ROW_NUMBER() over(order by b.CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by b.UcarId asc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,b.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -137,6 +168,10 @@ func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
 		join City c on b.CarCityId =c.city_Id
 		join Dealer_Vendor_Account as a on b.UserID=a.DVAId
 		where b.CarPublishTime > '%s'  and b.Destroy=0 and b.UcarStatus > 0 and a.Status !=-1 `,startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, b.CarPublishTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -145,9 +180,14 @@ func GetUcars(start, end int64) ([]model.UcarBaseInfo, error) {
 // 评估
 func CountEvaluate() (int64, error) {
 	var u model.EvaluateUcar
+
+	w := fmt.Sprintf(`e.EcarStatus=1 and e.Active=1 and e.CreateTime > '%[1]s'  and r.evaluateTime > '%[1]s'`,startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, e.CreateTime,GetDate())=1"
+	}
 	total, err := ucar_engine.Table("evaluateUcarBasicInfo").Alias("e").
 		Join("inner", []string{"evaluateRecord", "r"}, "e.EvalCarID=r.EvalCarID").
-		Where(fmt.Sprintf(`e.EcarStatus=1 and e.Active=1 and e.CreateTime > '%[1]s'  and r.evaluateTime > '%[1]s'`,startdate)).Count(&u)
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -156,7 +196,7 @@ func CountEvaluate() (int64, error) {
 
 func GetEvaluates(start, end int64) ([]model.EvaluateUcar, error) {
 	var entities []model.EvaluateUcar
-	all := fmt.Sprintf(`select ROW_NUMBER() over(order by e.CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by e.EvalCarID asc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC,e.CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -168,6 +208,10 @@ func GetEvaluates(start, end int64) ([]model.EvaluateUcar, error) {
 		join City c on e.EcarLocation=c.city_Id
 		join evaluateRecord r on e.EvalCarID=r.EvalCarID
 		where e.EcarStatus=1 and e.Active=1 and e.CreateTime > '%[1]s'  and r.evaluateTime > '%[1]s' `,startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, e.CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err
@@ -176,8 +220,13 @@ func GetEvaluates(start, end int64) ([]model.EvaluateUcar, error) {
 // 评估
 func CountDealers() (int64, error) {
 	var u model.Dealer
+	w := fmt.Sprintf(`EPId>0 and Status!=-1 and CreateTime>'%s'`,startdate)
+	if !isalldata {
+		w = w + " and DATEDIFF(d, CreateTime,GetDate())=1"
+	}
+
 	total, err := ucar_engine.Table("Dealer_Vendor_Account").
-		Where(fmt.Sprintf(`EPId>0 and Status!=-1 and CreateTime>'%s'`,startdate)).Count(&u)
+		Where(w).Count(&u)
 	if err != nil {
 		return 0, err
 	}
@@ -186,7 +235,7 @@ func CountDealers() (int64, error) {
 
 func GetDealers(start, end int64) ([]model.Dealer, error) {
 	var entities []model.Dealer
-	all := fmt.Sprintf(`select ROW_NUMBER() over(order by CreateTime desc) as row,
+	all := fmt.Sprintf(`select ROW_NUMBER() over(order by DVAId desc) as row,
 		'' as SRC_IP,'' as DST_IP,'' as SRC_PORT,'' as DST_PORT,'' as MAC, CreateTime as CAPTURE_TIME,'' as IMSI,
 		'' as EQUIPMENT_ID,'' as HARDWARE_SIGNATURE,'' as LONGITUDE,'' as LATITUDE,'02' as TERMINAL_TYPE,
 		'' as TERMINAL_MODEL,'' as TERMINAL_OS_TYPE,'淘车' as SOFTWARE_NAME,'' as DATA_LAND,'1430015' as APPLICATION_TYPE,
@@ -194,6 +243,10 @@ func GetDealers(start, end int64) ([]model.Dealer, error) {
  		isnull(Tel400,CompanyPhone) as  BINDING_PHONE,  FullName as COMPANY_NAME,  type as DEALER_TYPE,
   		Address as DEALER_ADDRESS
 		from Dealer_Vendor_Account where EPId>0 and Status!=-1 and CreateTime>'%s'`,startdate)
+
+	if !isalldata {
+		all = all + " and DATEDIFF(d, CreateTime,GetDate())=1"
+	}
 	sql := `select t.* from (%s) as t where t.row between %d and %d`
 	err := ucar_engine.SQL(fmt.Sprintf(sql, all, start, end)).Find(&entities)
 	return entities, err

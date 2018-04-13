@@ -19,5 +19,5 @@ type Book struct {
 	VEHICLE_CONDITION string //车况
 	LICENSE_PLATE_SITE string //牌照地
 
-	AimUcarId int // 关联redis的额外字段
+	AimUcarId string // 关联redis的额外字段
 }

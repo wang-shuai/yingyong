@@ -2,19 +2,19 @@ package bcp
 
 import (
 	"os"
-	"../index"
+	"golang-services/jingyong/index"
 	"fmt"
-	"../model"
+	"golang-services/jingyong/model"
 	"io/ioutil"
 	"github.com/alexmullins/zip"
 	"time"
 	"strconv"
 	"io"
 	"bytes"
-	"sync"
-	"../ftp"
+	"golang-services/jingyong/ftp"
 	"strings"
-	"../tool"
+	"golang-services/jingyong/tool"
+	"gitlab.dev.daikuan.com/platform/golang-services/push-cities-to-redis/flog"
 )
 
 const (
@@ -33,7 +33,7 @@ func ZipUserInfo() {
 	user := new(UserBcp)
 	filelist, err := user.WriteUserBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入注册用户bcp文件失败：", err)
+		flog.Errorf("写入注册用户bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -43,13 +43,14 @@ func ZipUserInfo() {
 }
 
 func ZipDealerUserInfo() {
+	//model.Basepath + model.OutputDir +
 
 	filedir := model.Basepath + model.DealerUserDir
 	clean(filedir)
 	DealerUser := new(DealerUserBcp)
 	filelist, err := DealerUser.WriteDealerUserBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入注册商户bcp文件失败：", err)
+		flog.Errorf("写入注册商户bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -65,7 +66,7 @@ func ZipCollectionInfo() {
 	collect := new(CollectionBcp)
 	filelist, err := collect.WriteCollectionBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入收藏bcp文件失败：", err)
+		flog.Errorf("写入收藏bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -81,7 +82,7 @@ func ZipSubscribeInfo() {
 	subscribe := new(SubscribeBcp)
 	filelist, err := subscribe.WriteSubscribeBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入收藏bcp文件失败：", err)
+		flog.Errorf("写入收藏bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -97,7 +98,7 @@ func ZipUcar() {
 	ucar := new(UcarBcp)
 	filelist, err := ucar.WriteUcarBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入车源发布bcp文件失败：", err)
+		flog.Errorf("写入车源发布bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -113,7 +114,7 @@ func ZipEvaluate() {
 	ucar := new(EvaluateBcp)
 	filelist, err := ucar.WriteEvaluateBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入车辆评估bcp文件失败：", err)
+		flog.Errorf("写入车辆评估bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -130,7 +131,7 @@ func ZipLoanOrder() {
 	loanorder := new(LoanOrderBcp)
 	filelist, err := loanorder.WriteLoanOrderBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入车辆评估bcp文件失败：", err)
+		flog.Errorf("写入车辆评估bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -147,7 +148,7 @@ func ZipBooks() {
 	loanorder := new(BookBcp)
 	filelist, err := loanorder.WriteBookBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入预约记录bcp文件失败：", err)
+		flog.Errorf("写入预约记录bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -164,7 +165,7 @@ func ZipDealers() {
 	dealer := new(DealerBcp)
 	filelist, err := dealer.WriteDealerBcp() //写bcp文件
 	if err != nil {
-		fmt.Println("写入商户信息bcp文件失败：", err)
+		flog.Errorf("写入商户信息bcp文件失败：%v \n", err)
 		return
 	}
 	idx := new(index.Index)
@@ -175,7 +176,6 @@ func ZipDealers() {
 
 // 写入文件 并返回文件列表
 func writeBcp(total int64, dir, code string, getFileContent func(int64, int64) string) (map[string]int64, error) {
-	clean(dir)
 
 	filelist := make(map[string]int64)
 	var start, end int64
@@ -190,7 +190,7 @@ func writeBcp(total int64, dir, code string, getFileContent func(int64, int64) s
 	}
 
 	now := time.Now()
-	var wg sync.WaitGroup
+
 	for i := int64(1); i <= pagecnt; i++ {
 
 		start = (i-1)*pagesize + 1
@@ -203,30 +203,23 @@ func writeBcp(total int64, dir, code string, getFileContent func(int64, int64) s
 			filelist[bcpname] = pagesize
 		}
 
-		wg.Add(1)
-		go func(start, end int64, name string) {
-			defer wg.Done() //wg.Add(-1)
+		content := getFileContent(start, end)
 
-			content := getFileContent(start, end)
+		tdir := model.Basepath + dir
+		if _, err := os.Open(tdir); err != nil {
+			os.MkdirAll(tdir, os.ModePerm)
+		}
+		fpath := tdir + bcpname
 
-			tdir := model.Basepath + dir
-			if _, err := os.Open(tdir); err != nil {
-				os.MkdirAll(tdir, os.ModePerm)
-			}
-			fpath := tdir + name
+		fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+		defer fileptr.Close()
+		if err != nil {
+			flog.Errorf("创建文件失败：%v \n", fpath, err)
+			continue
+		}
 
-			fileptr, err := os.OpenFile(fpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-			defer fileptr.Close()
-			if err != nil {
-				fmt.Println("创建文件失败：", fpath, err)
-				return
-			}
-
-			fileptr.WriteString(strings.TrimSuffix(content, "\n"))
-		}(start, end, bcpname)
+		fileptr.WriteString(strings.TrimSuffix(content, "\n"))
 	}
-	wg.Wait()
-	fmt.Println("所有的线程执行结束", code)
 
 	return filelist, nil
 }
@@ -236,7 +229,7 @@ func bcpzip(filedir, code string) {
 	now := time.Now()
 	files, err := ioutil.ReadDir(filedir)
 	if err != nil {
-		fmt.Println("打开用户bcp临时文件失败：", err)
+		flog.Errorf("打开用户bcp临时文件失败：%v \n", err)
 		return
 	}
 
@@ -246,6 +239,9 @@ func bcpzip(filedir, code string) {
 	timepath := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
 	zipname := strconv.Itoa(model.AppType) + "-" + tool.HandTime(now) + "-11-1-00001.zip"
 
+	rmdir := model.Basepath + model.OutputDir + datepath + string(os.PathSeparator) + code
+	clean(rmdir)
+
 	fdir := model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
 	path = model.Basepath + fdir
 	if _, err := os.Open(path); err != nil {
@@ -254,34 +250,37 @@ func bcpzip(filedir, code string) {
 
 	fzip, _ := os.Create(path + zipname)
 	zipw := zip.NewWriter(fzip)
-	//defer zipw.Close()
+	defer zipw.Close()
+
 	pwd, _ := model.Cfg.String("zippwd")
 	for _, file := range files {
 		w, err := zipw.Encrypt(file.Name(), pwd)
 		if err != nil {
-			fmt.Println(err)
+			flog.Errorf("加密压缩zip包失败：%s %v \n", file.Name(), err)
 			continue
 		}
 		contents, err := ioutil.ReadFile(filedir + file.Name())
 		if err != nil {
-			fmt.Println("写入zip包时读取文件失败：", filedir+file.Name(), err)
+			flog.Errorf("写入zip包时读取文件失败：%s %v \n", filedir+file.Name(), err)
 			continue
 		}
 		_, err = io.Copy(w, bytes.NewReader(contents))
 		if err != nil {
-			fmt.Println("写入zip包时copy文件数据流失败：", filedir+file.Name(), err)
+			flog.Errorf("写入zip包时copy文件数据流失败：%s %v \n", filedir+file.Name(), err)
 			continue
 		}
 	}
 	zipw.Flush()
-	zipw.Close() // 非defer，关闭压缩流之后才能上传，否则上传的文件错误
 
-	//上传ftp
-	server, _ := model.Cfg.String("ftp.server")
-	port, _ := model.Cfg.String("ftp.port")
-	username, _ := model.Cfg.String("ftp.username")
-	password, _ := model.Cfg.String("ftp.password")
-	ftpOp.FtpUploadFile(strings.Join([]string{server, port}, ":"), username, password, path+zipname, fdir, zipname)
+	//zipw.Close() //  非defer，如果在当前方法内上传，需要手动关闭压缩流之后才能上传，否则上传的文件错误
+
+	////上传ftp
+	//server, _ := model.Cfg.String("ftp.server")
+	//port, _ := model.Cfg.String("ftp.port")
+	//username, _ := model.Cfg.String("ftp.username")
+	//password, _ := model.Cfg.String("ftp.password")
+	////ftpOp.UploadFile(strings.Join([]string{server, port}, ":"), username, password, path+zipname, fdir, zipname)
+	//ftpOp.UploadFile_1(strings.Join([]string{server, port}, ":"), username, password, path+zipname, fdir, zipname)
 }
 
 //清空 目录下文件 重新生成

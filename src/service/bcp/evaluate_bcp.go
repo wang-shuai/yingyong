@@ -1,11 +1,11 @@
 package bcp
 
 import (
-	"../model"
-	"fmt"
+	"golang-services/jingyong/model"
+	"gitlab.dev.daikuan.com/platform/golang-services/push-cities-to-redis/flog"
 	"strings"
-	"../data"
-	"../tool"
+	"golang-services/jingyong/data"
+	"golang-services/jingyong/tool"
 )
 
 type EvaluateBcp struct {
@@ -16,7 +16,7 @@ func (this *EvaluateBcp) WriteEvaluateBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountEvaluate()
 	if err != nil {
-		fmt.Println("获取车辆评估总条数错误：", err)
+		flog.Errorf("获取车辆评估总条数错误：%v \n", err)
 		return nil, err
 	}
 	return writeBcp(cnt, model.EvaluateDir, model.EvaluateCode, getEvaluateFileContent)
@@ -27,7 +27,7 @@ func getEvaluateFileContent(start, end int64) string {
 	var entities []model.EvaluateUcar
 	entities, err := data.GetEvaluates(start, end)
 	if err != nil {
-		fmt.Println("获取全部车辆评估异常：", err)
+		flog.Errorf("获取全部车辆评估异常：%v \n", err)
 		return ``
 	}
 	var content string
@@ -71,6 +71,6 @@ func getEvaluateFileContent(start, end int64) string {
 
 		content += line + "\n"
 	}
-	//fmt.Println(content)
+	//flog.Errorf(content)
 	return content
 }

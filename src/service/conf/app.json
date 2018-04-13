@@ -3,17 +3,17 @@
   "db":{
     "newcar":{
       "schema": "mssql",
-      "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=30"
+      "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=180"
     },
     "ucar":{
       "schema": "mssql",
-      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=30"
+      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=180"
     },
     "ucarleads":{
       "schema": "mssql",
-      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=30"
+      "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=180"
     },
-    "showsql":false
+    "showsql":true
   },
   "ftp":{
     "server":"192.168.145.9",
@@ -26,5 +26,11 @@
     "maxidle":3,
     "idletimeout":240
   },
-  "startdate":"2017-01-01"
+  "log":{
+    "filename":"jingyong.log",
+    "path":"./log/",
+    "loglevel":4
+  },
+  "startdate":"2017-01-01",
+  "isalldata":true
 }
