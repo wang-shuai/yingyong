@@ -19,6 +19,7 @@ func (this *DealerUserBcp) WriteDealerUserBcp() (map[string]int64, error) {
 		flog.Errorf("获取商户用户总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取商户用户总条数：%v \n", cnt)
 	return writeBcp(cnt, model.DealerUserDir, model.DealerUserCode, getDealerUserFileContent)
 }
 
@@ -27,7 +28,7 @@ func getDealerUserFileContent(start, end int64)string {
 	var entities []model.DealerUser
 	entities, err := data.GetUCarDealerUsers(start, end)
 	if err != nil {
-		flog.Errorf("获取全部商户异常：%v \n", err)
+		flog.Errorf("获取全部商户用户异常：%v \n", err)
 		return ``
 	}
 	var content string

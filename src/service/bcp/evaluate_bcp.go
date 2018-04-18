@@ -19,6 +19,7 @@ func (this *EvaluateBcp) WriteEvaluateBcp() (map[string]int64, error) {
 		flog.Errorf("获取车辆评估总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取车辆评估总条数：%v \n", cnt)
 	return writeBcp(cnt, model.EvaluateDir, model.EvaluateCode, getEvaluateFileContent)
 }
 

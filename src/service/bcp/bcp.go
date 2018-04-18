@@ -239,9 +239,6 @@ func bcpzip(filedir, code string) {
 	timepath := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
 	zipname := strconv.Itoa(model.AppType) + "-" + tool.HandTime(now) + "-11-1-00001.zip"
 
-	rmdir := model.Basepath + model.OutputDir + datepath + string(os.PathSeparator) + code
-	clean(rmdir)
-
 	fdir := model.OutputDir + datepath + string(os.PathSeparator) + code + string(os.PathSeparator) + timepath + string(os.PathSeparator)
 	path = model.Basepath + fdir
 	if _, err := os.Open(path); err != nil {
@@ -281,6 +278,11 @@ func bcpzip(filedir, code string) {
 	//password, _ := model.Cfg.String("ftp.password")
 	////ftpOp.UploadFile(strings.Join([]string{server, port}, ":"), username, password, path+zipname, fdir, zipname)
 	//ftpOp.UploadFile_1(strings.Join([]string{server, port}, ":"), username, password, path+zipname, fdir, zipname)
+}
+
+func CleanOutput(){
+	rmdir := model.Basepath + model.OutputDir
+	clean(rmdir)
 }
 
 //清空 目录下文件 重新生成

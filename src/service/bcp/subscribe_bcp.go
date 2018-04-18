@@ -16,9 +16,10 @@ func (this *SubscribeBcp) WriteSubscribeBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountSubscribe()
 	if err != nil {
-		flog.Errorf("获取商户总条数错误：%v \n", err)
+		flog.Errorf("获取订阅总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取订阅记录总条数：%v \n", cnt)
 	return writeBcp(cnt, model.SubscribeDir, model.SubscribeCode, getSubscribeFileContent)
 }
 

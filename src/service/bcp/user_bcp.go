@@ -19,6 +19,7 @@ func (this *UserBcp) WriteUserBcp() (map[string]int64, error) {
 		flog.Errorf("获取用户总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取用户总条数：%v \n", cnt)
 	return writeBcp(cnt, model.UserDir, model.UserCode, getUserFileContent)
 }
 

@@ -1,36 +1,44 @@
 {
-  "zippwd":"run1234!@#",
-  "db":{
-    "newcar":{
+  "zippwd": "run1234!@#",
+  "db": {
+    "newcar": {
       "schema": "mssql",
       "connectionString": "odbc:server=192.168.151.56\\SERVER14;user id=sa;password={1234.abcd};database=Finance;connection timeout=180"
     },
-    "ucar":{
+    "ucar": {
       "schema": "mssql",
       "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucar;connection timeout=180"
     },
-    "ucarleads":{
+    "ucarleads": {
       "schema": "mssql",
       "connectionString": "odbc:server=192.168.156.225;user id=zhaogx;password={!QAZxsw2};database=ucarleads;connection timeout=180"
     },
-    "showsql":true
+    "showsql": true
   },
-  "ftp":{
-    "server":"192.168.145.9",
-    "port":"21",
-    "username":"wangshuai",
-    "password":"wangshuai"
+  "ftp": {
+    "server": "192.168.145.9",
+    "port": "21",
+    "username": "wangshuai",
+    "password": "wangshuai"
   },
-  "redis":{
-    "address":"192.168.156.218:19000",
-    "maxidle":3,
-    "idletimeout":240
+  "redis": {
+    "address": "192.168.156.218:19000",
+    "maxidle": 3,
+    "idletimeout": 240
   },
-  "log":{
-    "filename":"jingyong.log",
-    "path":"./log/",
-    "loglevel":4
+  "log": {
+    "filename": "jingyong.log",
+    "path": "./log/",
+    "loglevel": 4
   },
-  "startdate":"2017-01-01",
-  "isalldata":true
+  "email": {
+    "from": "jerome_wang_0210@126.com",
+    "to": "wangshuai@yxqiche.com",
+    "host": "smtp.126.com",
+    "port": 25,
+    "username": "jerome_wang_0210@126.com",
+    "password": "shuizhongyu"
+  },
+  "startdate": "2017-01-01",
+  "isalldata": true
 }

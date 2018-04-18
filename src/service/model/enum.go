@@ -17,7 +17,7 @@ const (
 	EvaluateCode   = "WA_SOURCE_0115"   // 车辆评估
 	UcarCode       = "WA_SOURCE_0114"   // 车源发布
 	LoanOrderCode  = "WA_SOURCE_0116"   //贷款购车
-	BookCode       = "WA_SOURCE_0117"   //贷款购车
+	BookCode       = "WA_SOURCE_0117"   //预约记录
 	DealerCode     = "WA_SOURCE_0121"   //商家申请
 )
 

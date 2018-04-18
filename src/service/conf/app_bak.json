@@ -1,0 +1,44 @@
+{
+  "zippwd":"run1234!@#",
+  "db":{
+    "newcar":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=172.31.9.253;user id=finance_r;password={b2A6@hFIC%3a};database=Finance;connection timeout=180"
+    },
+    "ucar":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=172.28.9.203;user id=ucar_r;password={Rgb@#*ijn2845};database=ucar;connection timeout=180"
+    },
+    "ucarleads":{
+      "schema": "mssql",
+      "connectionString": "odbc:server=172.28.9.203;user id=ucarleadsR;password={PaDb1imTvSPlPnaO};database=ucarleads;connection timeout=180"
+    },
+    "showsql":false
+  },
+  "ftp":{
+    "server":"172.16.18.150",
+    "port":"21",
+    "username":"taoche",
+    "password":"88463b044f4e908e4002f23e638231aa"
+  },
+  "redis":{
+    "address":"172.28.5.46:19000,172.28.5.47:19000,172.28.5.11:19000,172.28.5.12:19000,172.28.5.71:19000,172.28.5.72:19000,172.28.5.73:19000,172.28.5.74:19000,172.28.5.46:19000,172.28.5.47:19000,172.28.5.11:19000,172.28.5.12:19000,172.28.5.71:19000,172.28.5.72:19000,172.28.5.73:19000,172.28.5.74:19000",
+    "maxidle":3,
+    "idletimeout":240
+  },
+  "log":{
+    "filename":"jingyong.log",
+    "path":"./log/",
+    "loglevel":4
+  },
+  "email": {
+    "from": "yixinfinance@notice.daikuan.com",
+    "to": "wangshuai@yxqiche.com",
+    "host": "10.0.8.46",
+    "port": 25,
+    "username": "yixinfinance",
+    "password": "YIXIN@00.."
+  },
+  "startdate":"2017-01-01",
+  "isalldata":true
+}

@@ -31,4 +31,12 @@ func init() {
 	if _, e := os.Open(fpath); e != nil {
 		os.MkdirAll(fpath, os.ModePerm)
 	}
+
+	host, _ := Cfg.String("email.host")
+	port, _ := Cfg.Int("email.port")
+	username, _ := Cfg.String("email.username")
+	pwd, _ := Cfg.String("email.password")
+	from, _ := Cfg.String("email.from")
+	to, _ := Cfg.String("email.to")
+	tool.EmailInit(host, port, username, pwd, from, to)
 }

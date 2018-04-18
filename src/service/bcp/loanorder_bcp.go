@@ -16,9 +16,10 @@ func (this *LoanOrderBcp) WriteLoanOrderBcp() (map[string]int64, error) {
 
 	cnt, err := data.CountLoanOrder()
 	if err != nil {
-		flog.Errorf("获取用户总条数错误：%v \n", err)
+		flog.Errorf("获取订单总数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取订单记录总条数：%v \n", cnt)
 	return writeBcp(cnt, model.LoanOrderDir, model.LoanOrderCode, getLoanOrderFileContent)
 }
 
@@ -27,7 +28,7 @@ func getLoanOrderFileContent(start, end int64) string {
 	var LoanOrders []model.LoanOrder
 	LoanOrders, err := data.GetLoanOrders(start, end)
 	if err != nil {
-		flog.Errorf("获取全部用户异常：%v \n", err)
+		flog.Errorf("获取订单数据异常：%v \n", err)
 		return ``
 	}
 	var content string

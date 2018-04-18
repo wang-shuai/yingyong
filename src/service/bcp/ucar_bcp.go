@@ -20,6 +20,7 @@ func (this *UcarBcp) WriteUcarBcp() (map[string]int64, error) {
 		flog.Errorf("获取车辆发布总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取车源记录总条数：%v \n", cnt)
 	return writeBcp(cnt, model.UcarDir, model.UcarCode, getUcarFileContent)
 }
 

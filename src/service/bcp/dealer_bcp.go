@@ -19,6 +19,7 @@ func (this *DealerBcp) WriteDealerBcp() (map[string]int64, error) {
 		flog.Errorf("获取商户总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取商户总条数：%v \n", cnt)
 	return writeBcp(cnt, model.DealerDir, model.DealerCode, getDealerFileContent)
 }
 

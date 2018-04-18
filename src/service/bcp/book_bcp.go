@@ -23,6 +23,7 @@ func (this *BookBcp) WriteBookBcp() (map[string]int64, error) {
 		flog.Errorf("获取预约记录总条数错误：%v \n", err)
 		return nil, err
 	}
+	flog.Errorf("获取预约记录总条数：%v \n", cnt)
 	return writeBcp(cnt, model.BookDir, model.BookCode, getBookFileContent)
 }
 
@@ -43,7 +44,7 @@ func getBookFileContent(start, end int64) string {
 	}
 
 	datamap := make(map[string]model.Entity_Cacheucarbasicinfo_Full)
-	keyfmt := "BitAuto.Taoche.CarSource_FullDetail_UCarId_%d"
+	keyfmt := "BitAuto.Taoche.CarSource_FullDetail_UCarId_%s"
 	for i := 0; i < turn; i++ {
 		rediskeys := make([]interface{}, 0)
 
@@ -51,7 +52,7 @@ func getBookFileContent(start, end int64) string {
 			book := entities[s]
 			rediskeys = append(rediskeys, fmt.Sprintf(keyfmt, book.AimUcarId))
 		}
-
+		flog.Infof("缓存key：%v",rediskeys)
 		//books := make([]model.Entity_Cacheucarbasicinfo_Full, len(rediskeys))
 
 		conn := model.Pool.Get()
@@ -72,7 +73,7 @@ func getBookFileContent(start, end int64) string {
 			}
 		}
 
-		flog.Errorf("缓存字典：%v \n",datamap)
+		flog.Infof("缓存字典：%v \n",datamap)
 	}
 
 	for i := range entities {
